@@ -6,6 +6,7 @@ from pathlib import Path
 import random
 from PIL import Image
 from screens.gameplay import Gameplay
+from rules.beatmap_reader import Beatmap
 
 
 
@@ -69,16 +70,11 @@ class BeatmapsSelector(ctk.CTkFrame):
             
             for beatmap in self.beatmaps_path.iterdir():
                 
-                color = hexa_random()
+                beatmap = Beatmap(beatmap)
                 
-                if beatmap.is_dir():
+                if beatmap.is_diret():
                     
-                    self.arquives = beatmap.glob('*')
-                    map_file = next((a for a in self.arquives if a.suffix == '.osu'), None)
-                    music_file = next((a for a in self.arquives if a.suffix == '.mp3'), None)
-                    background_file = next((a for a in self.arquives if a.suffix == '.png' or a.suffix == 'png'), None)
-                    
-                    BeatmapItem(self.beatmap_list, color)
+                    BeatmapItem(self.beatmap_list)
 
 
 

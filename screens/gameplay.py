@@ -27,7 +27,7 @@ class Gameplay:
         
         #_____________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________
-        esteira = pygame.image.load('assets/skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()    # Carrega a imagem com transparência
+        esteira = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()    # Carrega a imagem com transparência
         
         
         
@@ -40,7 +40,6 @@ class Gameplay:
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:    # Se fechar a janela
                     self.run = False          # Para o loop do jogo
-                    self.menu.destroy()       # Fecha a instância do app
             
             
             
