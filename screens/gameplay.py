@@ -1,6 +1,6 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS___________________________
 import pygame
-from rules.note import Note
+from rules.note import Notes
 
 
 
@@ -8,26 +8,40 @@ from rules.note import Note
 class Gameplay:
     
     #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_____________
-    def __init__(self, skin, beatmap):
+    def __init__(self, skin, music, title, artist, creator, version, od, keys, map_id, preview, notes):
         
         pygame.init()                   # Inicializa os módulos do Pygame
         info = pygame.display.Info()    # Coleta informações do monitor
+        
+        self.music = music
+        self.title = title
+        self.artist = artist
+        self.creator = creator
+        self.version = version
+        self.od = od
+        self.key = keys
+        self.id = map_id
+        self.preview = preview
+        
+        self.skin = 'padrão'
+        self.notes = notes
+        self.notes_group = pygame.sprite.Group()
         
         
         
         #_____________________________________________________________
         #__CONFIGURAÇÕES DE TELA____________________________
-        self.largura = info.current_w - 100                             # Largura da janela (Monitor - 100px)
-        self.altura = info.current_h - 100                              # Altura da janela (Monitor - 100px)
-        self.tela = pygame.display.set_mode((self.largura, self.altura))    # Cria a janela do jogo
-        self.relogio = pygame.time.Clock()                                  # Controlador de tempo/FPS
+        self.w = info.current_w - 100                             # Largura da janela (Monitor - 100px)
+        self.h = info.current_h - 100                              # Altura da janela (Monitor - 100px)
+        self.screen = pygame.display.set_mode((self.w, self.h))    # Cria a janela do jogo
+        self.clock = pygame.time.Clock()                                  # Controlador de tempo/FPS
         self.run = True                                                 # Variável de controle do loop
         
         
         
         #_____________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________
-        esteira = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()    # Carrega a imagem com transparência
+        pad = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()    # Carrega a imagem com transparência
         
         
         
@@ -50,22 +64,24 @@ class Gameplay:
             
             #_____________________________________________________________
             #__LIMPEZA DA TELA__________________________________
-            self.tela.fill('#5E5B8B')    # Preenchimento de fundo sólido
+            self.screen.fill('#5E5B8B')    # Preenchimento de fundo sólido
             
             
             
             #_____________________________________________________________
             #__RENDERIZAÇÃO DE OBJETOS__________________________
             # esteira
-            self.tela.blit(esteira, (self.largura/2 - (esteira.get_height()/4), 0))
+            self.screen.blit(pad, (self.w/2 - (pad.get_height()/4), 0))
             
             # chaves
-            
+            self.screen
             
             # notas
-            
-            for note in beatmap:
-                note = Note()
+            for note in self.notes:
+                
+                note = Notes('beatmaps/2484096 DETRO - volcanic (Short Ver.)7/Menphiss (1).png', 5, 1, 50)
+                self.notes_group.add(note)
+            self.notes_group.update()
             
             # notas longas
             
@@ -81,7 +97,7 @@ class Gameplay:
             #_____________________________________________________________
             #__CONTROLE DE FPS__________________________________
             # Trava o jogo em 60 FPS
-            self.fps = self.relogio.tick(60)
+            self.fps = self.clock.tick(60)
         
         
         # Encerra o Pygame ao sair do loop

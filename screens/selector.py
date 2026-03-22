@@ -1,12 +1,12 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS___________________________
 import customtkinter as ctk
-from functools import partial
-import pathlib
-from pathlib import Path
+import os
 import random
+from functools import partial
+from pathlib import Path
 from PIL import Image
 from screens.gameplay import Gameplay
-from rules.beatmap_reader import Beatmap
+from rules.beatmap_reader import Beatmap, Difficult
 
 
 
@@ -70,11 +70,29 @@ class BeatmapsSelector(ctk.CTkFrame):
             
             for beatmap in self.beatmaps_path.iterdir():
                 
+                map_path = beatmap 
                 beatmap = Beatmap(beatmap)
                 
                 if beatmap.is_diret():
                     
-                    BeatmapItem(self.beatmap_list)
+                    for difficult in beatmap.difficults:
+                        
+                        diff_path = difficult
+                        difficult = Difficult(os.path.join(map_path, diff_path), map_path)
+                    
+                    self.item = BeatmapItem(
+                        self.beatmap_list, 
+                        beatmap,
+                        difficult.audio,
+                        difficult.title,
+                        difficult.artist,
+                        difficult.mapper,
+                        difficult.version,
+                        difficult.od, 
+                        difficult.key, 
+                        difficult.map_id,
+                        difficult.preview,
+                        )
 
 
 
@@ -82,17 +100,18 @@ class BeatmapsSelector(ctk.CTkFrame):
 class BeatmapItem(ctk.CTkFrame):
     
     #__CONSTRUTOR DO ITEM_______________________________
-    def __init__(self, master):
+    def __init__(self, master, beatmap, music, title, artist, creator, version, od, keys, map_id, preview):
         
-        self.map_info = {
-            'background': '',
-            'title': 'Título Exemplo',
-            'autor': 'Artista Exemplo',
-            'beatmapper': 'Mapper Exemplo',
-            'difficult': 'Hard',
-            'difficulties': '',
-            'song_preview': ''
-        }
+        self.beatmap = beatmap
+        self.music = music
+        self.title = title
+        self.artist = artist
+        self.mapper = creator
+        self.version = version
+        self.od = od
+        self.key = keys
+        self.id = map_id
+        self.preview = preview
         
         
         
@@ -142,9 +161,9 @@ class BeatmapItem(ctk.CTkFrame):
         #__TÍTULO DA MÚSICA_________________________________
         self.title = ctk.CTkLabel(
             master=self,                    # Colocado dentro do card
-            text=self.map_info['title'],    # Nome da música
+            text=self.title,                # Nome da música
             font=('Roboto', 18, 'bold'),    # Fonte moderna e em negrito
-            text_color='#FFFFFF',           # Cor branca sólida
+            text_color='#FFFFFF',       # Cor branca sólida
             corner_radius=0,                # Sem arredondamento
             width=200,                      # Largura definida
             height=30,                      # Altura definida
@@ -153,9 +172,9 @@ class BeatmapItem(ctk.CTkFrame):
         # coloca o widget no lugar
         self.title.place(
             relx=0.5,                       # Centralizado horizontalmente (50%)
-            rely=0.2,                       # Próximo ao topo (20%)
+            rely=0.1,                       # Próximo ao topo (20%)
             relwidth=0.9,                   # Ocupa 90% da largura
-            relheight=0.4,                  # Altura interna relativa
+            relheight=0.3,                  # Altura interna relativa
             anchor='center'                 # Fixa o centro como referência
         )
         self.title.bind('<Button-1>', self.play)
@@ -166,19 +185,19 @@ class BeatmapItem(ctk.CTkFrame):
         #__AUTOR DA MÚSICA__________________________________
         self.autor = ctk.CTkLabel(
             master=self,                    # Colocado dentro do card
-            text=self.map_info['autor'],    # Nome do artista
+            text=self.artist,    # Nome do artista
             font=('Roboto', 12, 'italic'),  # Fonte pequena e itálica
             text_color='#CCCCCC',           # Cinza claro para subtítulo
             corner_radius=5,                # Arredondamento do fundo
-            fg_color='black'                # Fundo preto para destaque
+            fg_color='black'                          # Sem fundo colorido
         )
         # coloca o widget no lugar
         self.autor.place(
-            relx=0.5,                       # Centralizado horizontalmente (50%)
-            rely=0.5,                       # No meio da altura (50%)
-            relwidth=0.3,                   # Largura interna relativa
-            relheight=0.15,                 # Altura interna relativa
-            anchor='center'                 # Fixa o centro como referência
+            relx=0.15,                       # Centralizado horizontalmente (50%)
+            rely=0.85,                       # No meio da altura (50%)
+            relwidth=0.6,                   # Largura interna relativa
+            relheight=0.35,                 # Altura interna relativa
+            anchor='center',                 # Fixa o centro como referência
         )
         self.autor.bind('<Button-1>', self.play)
         
@@ -188,20 +207,33 @@ class BeatmapItem(ctk.CTkFrame):
         #__BEATMAPPER DO MAPA_______________________________
         self.beatmapper = ctk.CTkLabel(
             master=self,                                   # Colocado dentro do card
-            text=f"Mapper: {self.map_info['beatmapper']}", # Texto formatado
+            text=f"Mapper: {self.mapper}",                 # Texto formatado
             font=('Roboto', 10),                           # Fonte discreta
             text_color='#AAAAAA',                      # Cor cinza suave
-            fg_color='transparent'                          # Sem fundo colorido
+            fg_color='black'                          # Sem fundo colorido
         )
         # coloca o widget no lugar
         self.beatmapper.place(
-            relx=0.5,                            # Centralizado horizontalmente (50%)
-            rely=0.75,                           # Parte inferior (75%)
-            relwidth=0.8,                        # Largura interna relativa
-            relheight=0.1,                       # Altura interna relativa
+            relx=0.75,                            # Centralizado horizontalmente (50%)
+            rely=0.85,                           # Parte inferior (75%)
+            relwidth=0.5,                        # Largura interna relativa
+            relheight=0.35,                       # Altura interna relativa
             anchor='center'                      # Fixa o centro como referência
         )
         self.beatmapper.bind('<Button-1>', self.play)
     
     def play(self, event=None):
-        self.game = Gameplay('padrão', [])
+        
+        self.game = Gameplay(
+            'padrão', 
+            self.beatmap,       
+            self.music,
+            self.title,
+            self.artist,
+            self.mapper,
+            self.version,
+            self.od,
+            self.key,
+            self.id,
+            self.preview
+        )

@@ -1,6 +1,6 @@
 import pygame
 
-class Note(pygame.sprite.Sprite):
+class Notes(pygame.sprite.Sprite):
     
     def __init__(self, png, speed, x, y):
         
@@ -20,6 +20,6 @@ class Note(pygame.sprite.Sprite):
         # posiciona a nota na tela
         self.rect.topleft = (x, y)
     
-    def gravity(self):
+    def update(self):
         
         self.rect.y += self.speed
