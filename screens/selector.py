@@ -1,239 +1,174 @@
-#________IMPORTAÇÃO DE DEPENDÊNCIAS___________________________
-import customtkinter as ctk
-import os
-import random
-from functools import partial
-from pathlib import Path
-from PIL import Image
-from screens.gameplay import Gameplay
-from rules.beatmap_reader import Beatmap, Difficult
+#________IMPORTAÇÃO DE DEPENDÊNCIAS_________________________________________________________________
+import customtkinter as ctk                  # Interface Gráfica
+import os                                    # Sistema de Arquivos
+import random                                # Gerador de Aleatórios
+from pathlib import Path                     # Caminhos de Diretório
+from screens.gameplay import Gameplay           
+from rules.beatmap_reader import Beatmap, Difficult  
 
 
 
-#________FUNÇÃO DE GERAR COR ALEATÓRIA(HEX)___________________
-def hexa_random():
-    '''Gera um # e um numero aleatório entre 000000 e 16.777.215
-    na formatação de hexadecimal(min = 000000 -> 0 max = 16.777.215 -> FFFFFF)'''
-    
+#________FUNÇÃO DE GERAR COR ALEATÓRIA (HEX)________________________________________________________
+def hexa_random() -> str:
+    '''Gera uma cor em formato hexadecimal para a interface.'''
     return f'#{random.randint(0, 0xFFFFFF):06x}'
 
 
 
-#________FRAME DO SELETOR DE BEATMAPS_________________________
+#________FRAME DO SELETOR DE BEATMAPS_______________________________________________________________
 class BeatmapsSelector(ctk.CTkFrame):
     
-    #_____________________________________________________________
-    #__CONSTRUTOR DO SELETOR____________________________
+    #_______________________________________________________________________________________________
+    #__CONSTRUTOR DO SELETOR________________________________________________________________________
     def __init__(self, master):
         
-        # frame do seletor
+        # Inicialização do Frame Principal
         super().__init__(
-            master=master,             # Janela pai
-            corner_radius=0,           # Cantos retos
-            fg_color='#1d1d1d',    # Cor de fundo escura
-            border_width=0,            # Sem borda
-            border_color='gray'        # Cor da borda
+            master=master,
+            corner_radius=0,
+            fg_color='#1d1d1d',
+            border_width=0
             )
-        # coloca o widget no lugar
-        self.place(
-            relx=0,                    # Encostado na esquerda
-            rely=0,                    # Encostado no topo
-            relwidth=1,                # Ocupa toda a largura (100%)
-            relheight=1                # Ocupa toda a altura (100%)
-        )
+        
+        self.place(relx=0, rely=0, relwidth=1, relheight=1)
         
         
-        
-        #_____________________________________________________________
-        #__LISTA ROLÁVEL DE BEATMAPS________________________
-        self.beatmap_list = ctk.CTkScrollableFrame(     
-            master=self,                            # Colocado dentro do seletor
-            corner_radius=10,                       # Cantos arredondados
-            fg_color='#2e2e2e',                 # Cinza grafite
-            border_width=0,                         # Sem borda
-            scrollbar_fg_color='#555',            # Cor da trilha da barra
-            scrollbar_button_color="#575757"    # Cor do botão de rolagem
+        #___________________________________________________________________________________________
+        #__LISTA ROLÁVEL DE BEATMAPS________________________________________________________________
+        # scroll_container: Nome que indica que o widget guarda outros itens com rolagem
+        self.scroll_container = ctk.CTkScrollableFrame(     
+            master=self,
+            corner_radius=10,
+            fg_color='#2e2e2e',
+            scrollbar_fg_color='#555',
+            scrollbar_button_color="#575757"
             )
-        # coloca o widget no lugar
-        self.beatmap_list.place(
-            relx=0.6,                      # Inicia em 60% da largura
-            rely=0,                        # Encostado no topo
-            relwidth=0.4,                  # Ocupa os 40% restantes da tela
-            relheight=1                    # Ocupa toda a altura
-        )
         
-        #_____________________________________________________________
-        #__LEITOR DE BEATMAPS EXISTENTES________________________
-        self.beatmaps_path = Path(__file__).parent.parent/'beatmaps'
+        self.scroll_container.place(relx=0.6, rely=0, relwidth=0.4, relheight=1)
         
-        if self.beatmaps_path.exists():
+        
+        #___________________________________________________________________________________________
+        #__LEITOR DE BEATMAPS EXISTENTES____________________________________________________________
+        self.directory_beatmaps = Path(__file__).parent.parent / 'beatmaps'
+        
+        if self.directory_beatmaps.exists():
             
-            for beatmap in self.beatmaps_path.iterdir():
+            # folder_path: Deixa claro que é o caminho da pasta sendo iterada
+            for folder_path in self.directory_beatmaps.iterdir():
                 
-                map_path = beatmap 
-                beatmap = Beatmap(beatmap)
+                # map_data: Representa o objeto lógico do mapa carregado
+                map_data = Beatmap(folder_path)
                 
-                if beatmap.is_diret():
+                if map_data.is_diret():
                     
-                    for difficult in beatmap.difficults:
+                    # diff_file: Nome do arquivo de dificuldade (string)
+                    for diff_file in map_data.difficults:
                         
-                        diff_path = difficult
-                        difficult = Difficult(os.path.join(map_path, diff_path), map_path)
+                        caminho_completo = os.path.join(folder_path, diff_file)
+                        
+                        # diff_obj: Representa o objeto da dificuldade específica
+                        diff_obj = Difficult(caminho_completo, folder_path)
                     
-                    self.item = BeatmapItem(
-                        self.beatmap_list, 
-                        beatmap,
-                        difficult.audio,
-                        difficult.title,
-                        difficult.artist,
-                        difficult.mapper,
-                        difficult.version,
-                        difficult.od, 
-                        difficult.key, 
-                        difficult.map_id,
-                        difficult.preview,
+                    #_______________________________________________________________________________
+                    # CRIAÇÃO DO COMPONENTE VISUAL
+                    # map_card: Nome padrão para itens de interface em lista
+                    self.map_card = BeatmapItem(
+                        master=self.scroll_container,
+                        map_ref=map_data,
+                        audio_path=diff_obj.audio_fn,
+                        title_text=diff_obj.song_title,
+                        artist_text=diff_obj.song_artist,
+                        mapper_name=diff_obj.mapper_name,
+                        version_name=diff_obj.diff_version,
+                        od_value=diff_obj.od_value,
+                        key_count=diff_obj.key_count,
+                        map_id=diff_obj.map_uid,
+                        cover_path=diff_obj.preview_ms,
                         )
 
 
 
-#________ITEM DO BEATMAP INDIVIDUAL NA LISTA__________________
+#________ITEM DO BEATMAP INDIVIDUAL NA LISTA________________________________________________________
 class BeatmapItem(ctk.CTkFrame):
     
-    #__CONSTRUTOR DO ITEM_______________________________
-    def __init__(self, master, beatmap, music, title, artist, creator, version, od, keys, map_id, preview):
+    #_______________________________________________________________________________________________
+    #__CONSTRUTOR DO ITEM (BEATMAP)____________________________________________________________________
+    def __init__(
+        self, 
+        master: ctk.CTkScrollableFrame, 
+        map_ref: Beatmap, 
+        audio_path: str, 
+        title_text: str, 
+        artist_text: str, 
+        mapper_name: str, 
+        version_name: str, 
+        od_value: float, 
+        key_count: int, 
+        map_id: int, 
+        cover_path: str
+    ):
         
-        self.beatmap = beatmap
-        self.music = music
-        self.title = title
-        self.artist = artist
-        self.mapper = creator
-        self.version = version
-        self.od = od
-        self.key = keys
-        self.id = map_id
-        self.preview = preview
+        # ATRIBUTOS LÓGICOS (DADOS)
+        self.map_ref: Beatmap = map_ref
+        self.audio_file: str = audio_path
+        self.title_str: str = title_text
+        self.artist_str: str = artist_text
+        self.mapper_str: str = mapper_name
+        self.version_str: str = version_name
+        self.od: float = od_value
+        self.keys: int = key_count
+        self.uid: int = map_id
+        self.cover_file: str = cover_path
         
         
-        
-        #_____________________________________________________________
-        #__CAIXA PRINCIPAL DO ITEM__________________________
+        #___________________________________________________________________________________________
+        #__CAIXA PRINCIPAL DO ITEM (CONTAINER)______________________________________________________
         super().__init__(
-            master=master,         # Janela pai (Lista rolável)
-            corner_radius=5,           # Cantos pouco arredondados
-            width=50,                  # Largura mínima
-            height=50,                 # Altura fixa do card
-            fg_color=hexa_random(),        # Cor aleatória do beatmap
-            border_width=0,            # Sem borda
-            cursor='hand2'             # Mouse vira mãozinha ao passar
+            master=master,
+            corner_radius=5,
+            width=50,
+            height=50,
+            fg_color=hexa_random(),
+            cursor='hand2'
         )
-        # coloca o widget no lugar
-        self.pack(
-            side='top',                # Empilha de cima para baixo
-            fill='x',                  # Estica na horizontal
-            padx=10,                   # Afastamento das laterais
-            pady=10,                   # Espaçamento entre itens
-            expand=True                # Ajusta com o redimensionamento
-        )
+        
+        self.pack(side='top', fill='x', padx=10, pady=10, expand=True)
         self.bind('<Button-1>', self.play)
         
         
+        #___________________________________________________________________________________________
+        #__WIDGETS DE INTERFACE (UI)________________________________________________________________
         
-        #_____________________________________________________________
-        #__FUNDO VISUAL DA CAIXA_____________________________
-        self.background = ctk.CTkLabel(
-            master=self,               # Colocado dentro do item
-            text='',                   # Apenas fundo, sem texto
-            corner_radius=10,          # Cantos arredondados
-            fg_color=hexa_random()         # Segue a cor do card pai
+        # ui_background_decor: Decoração visual interna
+        self.ui_background_decor = ctk.CTkLabel(
+            master=self,
+            text='', 
+            corner_radius=10,
+            fg_color=hexa_random()
         )
-        # coloca o widget no lugar
-        self.background.place(
-            relx=0.5,                  # Centralizado horizontalmente (50%)
-            rely=0.4,                  # Quase no meio da altura (40%)
-            relwidth=0.25,             # Ocupa 1/4 da largura do card
-            relheight=0.1,             # Ocupa 10% da altura do card
-            anchor='center'            # Fixa o centro como referência
+        self.ui_background_decor.place(relx=0.5, rely=0.4, relwidth=0.25, relheight=0.1, anchor='center')
+        self.ui_background_decor.bind('<Button-1>', self.play)
+        
+        
+        # ui_title_label: Rótulo de texto do título
+        self.ui_title_label = ctk.CTkLabel(
+            master=self,
+            text=self.title_str,
+            font=('Roboto', 18, 'bold'),
+            text_color='#FFFFFF'
         )
-        self.background.bind('<Button-1>', self.play)
+        self.ui_title_label.place(relx=0.5, rely=0.1, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_title_label.bind('<Button-1>', self.play)
         
         
-        #_____________________________________________________________
-        #__TÍTULO DA MÚSICA_________________________________
-        self.title = ctk.CTkLabel(
-            master=self,                    # Colocado dentro do card
-            text=self.title,                # Nome da música
-            font=('Roboto', 18, 'bold'),    # Fonte moderna e em negrito
-            text_color='#FFFFFF',       # Cor branca sólida
-            corner_radius=0,                # Sem arredondamento
-            width=200,                      # Largura definida
-            height=30,                      # Altura definida
-            justify='center'                # Centraliza o texto no label
+        # ui_artist_label: Rótulo de texto do artista
+        self.ui_artist_label = ctk.CTkLabel(
+            master=self,
+            text=self.artist_str,
+            font=('Roboto', 12, 'italic'),
+            text_color='#CCCCCC',
+            fg_color='black'
         )
-        # coloca o widget no lugar
-        self.title.place(
-            relx=0.5,                       # Centralizado horizontalmente (50%)
-            rely=0.1,                       # Próximo ao topo (20%)
-            relwidth=0.9,                   # Ocupa 90% da largura
-            relheight=0.3,                  # Altura interna relativa
-            anchor='center'                 # Fixa o centro como referência
-        )
-        self.title.bind('<Button-1>', self.play)
-        
-        
-        
-        #_____________________________________________________________
-        #__AUTOR DA MÚSICA__________________________________
-        self.autor = ctk.CTkLabel(
-            master=self,                    # Colocado dentro do card
-            text=self.artist,    # Nome do artista
-            font=('Roboto', 12, 'italic'),  # Fonte pequena e itálica
-            text_color='#CCCCCC',           # Cinza claro para subtítulo
-            corner_radius=5,                # Arredondamento do fundo
-            fg_color='black'                          # Sem fundo colorido
-        )
-        # coloca o widget no lugar
-        self.autor.place(
-            relx=0.15,                       # Centralizado horizontalmente (50%)
-            rely=0.85,                       # No meio da altura (50%)
-            relwidth=0.6,                   # Largura interna relativa
-            relheight=0.35,                 # Altura interna relativa
-            anchor='center',                 # Fixa o centro como referência
-        )
-        self.autor.bind('<Button-1>', self.play)
-        
-        
-        
-        #_____________________________________________________________
-        #__BEATMAPPER DO MAPA_______________________________
-        self.beatmapper = ctk.CTkLabel(
-            master=self,                                   # Colocado dentro do card
-            text=f"Mapper: {self.mapper}",                 # Texto formatado
-            font=('Roboto', 10),                           # Fonte discreta
-            text_color='#AAAAAA',                      # Cor cinza suave
-            fg_color='black'                          # Sem fundo colorido
-        )
-        # coloca o widget no lugar
-        self.beatmapper.place(
-            relx=0.75,                            # Centralizado horizontalmente (50%)
-            rely=0.85,                           # Parte inferior (75%)
-            relwidth=0.5,                        # Largura interna relativa
-            relheight=0.35,                       # Altura interna relativa
-            anchor='center'                      # Fixa o centro como referência
-        )
-        self.beatmapper.bind('<Button-1>', self.play)
     
-    def play(self, event=None):
-        
-        self.game = Gameplay(
-            'padrão', 
-            self.beatmap,       
-            self.music,
-            self.title,
-            self.artist,
-            self.mapper,
-            self.version,
-            self.od,
-            self.key,
-            self.id,
-            self.preview
-        )
+    def play(self):
+        self.game = Gameplay()

@@ -1,124 +1,133 @@
-#________IMPORTAÇÃO DE DEPENDÊNCIAS___________________________
-from screens.selector import BeatmapsSelector
-from screens.config import Config
-import tkinter as tk
-import customtkinter as ctk
+#________IMPORTAÇÃO DE DEPENDÊNCIAS_________________________________________________________________
+from screens.selector import BeatmapsSelector   # Tela de seleção de músicas
+from screens.config import Config               # Tela de configurações do sistema
+import tkinter as tk                            # Biblioteca base do Tk
+import customtkinter as ctk                     # Framework de UI moderna
 
 
 
-#________CLASSE PRINCIPAL DA APLICAÇÃO________________________
+#________CLASSE PRINCIPAL DA APLICAÇÃO______________________________________________________________
 class App(ctk.CTk):
     
-    #__CONSTRUTOR E CONFIGURAÇÃO DA UI__________________
+    #_______________________________________________________________________________________________
+    #__CONSTRUTOR E CONFIGURAÇÃO DA UI______________________________________________________________
     def __init__(self):
+        '''Inicializa a janela principal e as configurações básicas do CloneBeat.'''
         
         super().__init__()
         
-        # Configuração da janela
-        self.title('CloneBeat')
-        self.geometry('900x600')
-        self.config(bg="#1d1d1d")
+        # Parâmetros Físicos da Janela
+        self.title('CloneBeat')                 # Título da barra superior
+        self.geometry('900x600')                # Resolução inicial
+        self.config(bg="#1d1d1d")               # Cor de fundo base
         
-        # Carregamento do ícone
-        self.icone = tk.PhotoImage(file='images/clonebeat_icon.png')
+        # Carregamento de Atributos Visuais
+        # self.icone: Armazena o objeto PhotoImage para o ícone da barra de tarefas
+        self.icone: tk.PhotoImage = tk.PhotoImage(file='images/clonebeat_icon.png')
         self.iconphoto(True, self.icone)
         
         
         
-        #_____________________________________________________________
-        #__FRAME DO MENU INICIAL____________________________
-        self.menu = ctk.CTkFrame(  
-            master=self,                   # Janela pai
-            width=200,                     # Largura inicial
-            height=200,                    # Altura inicial
-            corner_radius=10,              # Arredondamento dos cantos
-            fg_color="#1d1d1d",        # Cor de fundo escura
-            border_width=0,                # Grossura da borda
-            border_color="gray"            # Cor da borda
+        #___________________________________________________________________________________________
+        #__FRAME DO MENU INICIAL____________________________________________________________________
+        # menu_ui: Container principal que abriga os botões do lobby
+        self.menu_ui: ctk.CTkFrame = ctk.CTkFrame(  
+            master=self,                        # Raiz da aplicação
+            width=200,                          # Largura base
+            height=200,                         # Altura base
+            corner_radius=10,                   # Arredondamento suave
+            fg_color="#1d1d1d",                 # Mantém o cinza escuro
+            border_width=0,                     # Sem contorno visível
+            border_color="gray"                 # Cor de borda reserva
         )
-        # coloca o widget no lugar
-        self.menu.place(
-            relx=0,                        # Encostado na esquerda
-            rely=0,                        # Encostado no topo
-            relwidth=1,                    # Ocupa toda a largura (100%)
-            relheight=1                    # Altura relativa (100% da janela)
+        
+        # Posicionamento Relativo (Ocupa a tela toda)
+        self.menu_ui.place(
+            relx=0,                             # Início na esquerda
+            rely=0,                             # Início no topo
+            relwidth=1,                         # 100% da largura
+            relheight=1                         # 100% da altura
         )
         
         
         
-        #_____________________________________________________________
-        #__BOTÃO JOGAR______________________________________
-        self.jogar_button = ctk.CTkButton(
-            master=self.menu,              # Frame pai
-            text='JOGAR',                  # Texto do botão
-            width=200,                     # Largura fixa
-            height=40,                     # Altura fixa
-            command=self.show_selector,    # Abre o seletor de mapas
-            fg_color="#5F9EA0",        # Cor do botão (Azul petróleo)
-            hover_color="#4F8485",     # Cor ao passar o mouse
-            text_color="white"             # Cor da fonte
+        #___________________________________________________________________________________________
+        #__BOTÃO JOGAR______________________________________________________________________________
+        self.jogar_button: ctk.CTkButton = ctk.CTkButton(
+            master=self.menu_ui,                # Localizado dentro do menu
+            text='JOGAR',                       # Label central
+            width=200,                          # Largura fixa do botão
+            height=40,                          # Altura fixa do botão
+            command=self.show_selector,         # Callback para troca de tela
+            fg_color="#5F9EA0",                 # Azul Petróleo
+            hover_color="#4F8485",              # Destaque ao passar o mouse
+            text_color="white"                  # Fonte branca para leitura
         )
-        # coloca o widget no lugar
+        
         self.jogar_button.place(
-            relx=0.5,                      # Centralizado horizontalmente (50%)
-            rely=0.1,                      # Próximo ao topo (10%)
-            relwidth=0.25,                 # Ocupa 1/4 da largura do pai
-            relheight=0.1,                 # Ocupa 10% da altura do pai
-            anchor='center'                # Fixa o centro como referência
+            relx=0.5,                           # Centro horizontal
+            rely=0.1,                           # 10% de distância do topo
+            relwidth=0.25,                      # 1/4 da tela de largura
+            relheight=0.1,                      # 10% da tela de altura
+            anchor='center'                     # Ponto de ancoragem no centro
         )
         
         
         
-        #_____________________________________________________________
-        #__BOTÃO CONFIGURAÇÕES______________________________
-        self.configurações_button = ctk.CTkButton(
-            master=self.menu,              # Frame pai
-            text='CONFIGURAÇÕES',          # Texto do botão
-            width=200,                     # Largura fixa
-            height=40,                     # Altura fixa
-            command=self.show_config,      # Abre as configurações
-            fg_color="#5F9EA0",        # Cor do botão (Azul petróleo)
-            hover_color="#4F8485",     # Cor ao passar o mouse
-            text_color="white"             # Cor da fonte
+        #___________________________________________________________________________________________
+        #__BOTÃO CONFIGURAÇÕES______________________________________________________________________
+        self.configurações_button: ctk.CTkButton = ctk.CTkButton(
+            master=self.menu_ui,                
+            text='CONFIGURAÇÕES',               
+            width=200,                          
+            height=40,                          
+            command=self.show_config,           
+            fg_color="#5F9EA0",        
+            hover_color="#4F8485",     
+            text_color="white"             
         )
-        # coloca o widget no lugar
+        
         self.configurações_button.place(
-            relx=0.5,                      # Centralizado horizontalmente (50%)
-            rely=0.25,                     # Abaixo do botão Jogar (25%)
-            relwidth=0.25,                 # Ocupa 1/4 da largura do pai
-            relheight=0.1,                 # Ocupa 10% da altura do pai
-            anchor='center'                # Fixa o centro como referência
+            relx=0.5,                      
+            rely=0.25,                          # Abaixo do botão Jogar
+            relwidth=0.25,                 
+            relheight=0.1,                 
+            anchor='center'                
         )
         
         
         
-        #_____________________________________________________________
-        #__BOTÃO SAIR_______________________________________
-        self.sair_button = ctk.CTkButton(
-            master=self.menu,              # Frame pai
-            text='SAIR',                   # Texto do botão
-            width=200,                     # Largura fixa
-            height=40,                     # Altura fixa
-            command=self.destroy,          # Fecha o programa
-            fg_color="#5F9EA0",        # Cor do botão (Azul petróleo)
-            hover_color="#4F8485",     # Cor ao passar o mouse
-            text_color="white"             # Cor da fonte
+        #___________________________________________________________________________________________
+        #__BOTÃO SAIR_______________________________________________________________________________
+        self.sair_button: ctk.CTkButton = ctk.CTkButton(
+            master=self.menu_ui,              
+            text='SAIR',                   
+            width=200,                     
+            height=40,                     
+            command=self.destroy,               # Encerra o processo da aplicação
+            fg_color="#5F9EA0",        
+            hover_color="#4F8485",     
+            text_color="white"             
         )
-        # coloca o widget no lugar
+        
         self.sair_button.place(
-            relx=0.5,                      # Centralizado horizontalmente (50%)
-            rely=0.4,                      # Abaixo das configurações (40%)
-            relwidth=0.25,                 # Ocupa 1/4 da largura do pai
-            relheight=0.1,                 # Ocupa 10% da altura do pai
-            anchor='center'                # Fixa o centro como referência
+            relx=0.5,                      
+            rely=0.4,                           # Abaixo das configurações
+            relwidth=0.25,                 
+            relheight=0.1,                 
+            anchor='center'                
         )
     
     
-    #__EXIBE A TELA DE SELEÇÃO DE MAPAS_________________
+    #_______________________________________________________________________________________________
+    #__EXIBE A TELA DE SELEÇÃO DE MAPAS_____________________________________________________________
     def show_selector(self):
-        self.selector = BeatmapsSelector(self)
+        '''Instancia o Seletor de Beatmaps sobrepondo o menu principal.'''
+        self.selector: BeatmapsSelector = BeatmapsSelector(self)
     
     
-    #__EXIBE A TELA DE CONFIGURAÇÕES____________________
+    #_______________________________________________________________________________________________
+    #__EXIBE A TELA DE CONFIGURAÇÕES________________________________________________________________
     def show_config(self):
-        self.config = Config(self)
+        '''Instancia o Frame de Configurações sobrepondo o menu principal.'''
+        self.config: Config = Config(self)

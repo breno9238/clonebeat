@@ -1,18 +1,21 @@
-#________IMPORTAÇÃO DE DEPENDÊNCIAS___________________________
-import pygame
-from rules.note import Notes
+#________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
+import pygame                       # Motor gráfico para o jogo
+from rules.note import Notes        # Classe das notas musicais
 
 
 
-#________MÓDULO DE EXECUÇÃO DO JOGO___________________________
+#________MÓDULO DE EXECUÇÃO DO JOGO_________________________________________________________________
 class Gameplay:
     
-    #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_____________
-    def __init__(self, skin, music, title, artist, creator, version, od, keys, map_id, preview, notes):
+    #_______________________________________________________________________________________________
+    #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_________________________________________________________
+    def __init__(self, skin: str, music: str, title: str, artist: str, creator: str, version: str, od: float, keys: int, map_id: int, preview: str, notes: list):
         
-        pygame.init()                   # Inicializa os módulos do Pygame
-        info = pygame.display.Info()    # Coleta informações do monitor
+        # Inicialização do Pygame e Coleta de Dados do Monitor
+        pygame.init()                       # Inicia os módulos internos
+        info = pygame.display.Info()        # Pega as specs do monitor do usuário
         
+        # Atribuição de Atributos (Dados do Mapa)
         self.music = music
         self.title = title
         self.artist = artist
@@ -23,82 +26,87 @@ class Gameplay:
         self.id = map_id
         self.preview = preview
         
+        # Configurações de Skin e Grupos de Sprites
         self.skin = 'padrão'
         self.notes = notes
-        self.notes_group = pygame.sprite.Group()
+        self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         
         
         
-        #_____________________________________________________________
-        #__CONFIGURAÇÕES DE TELA____________________________
-        self.w = info.current_w - 100                             # Largura da janela (Monitor - 100px)
-        self.h = info.current_h - 100                              # Altura da janela (Monitor - 100px)
-        self.screen = pygame.display.set_mode((self.w, self.h))    # Cria a janela do jogo
-        self.clock = pygame.time.Clock()                                  # Controlador de tempo/FPS
-        self.run = True                                                 # Variável de controle do loop
+        #___________________________________________________________________________________________
+        #__CONFIGURAÇÕES DE TELA____________________________________________________________________
+        self.w = info.current_w - 100                             # Largura (Monitor - 100px)
+        self.h = info.current_h - 100                             # Altura (Monitor - 100px)
+        self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
+        self.clock = pygame.time.Clock()                          # Controlador de FPS
+        self.run = True                                           # Controle do Loop
         
         
         
-        #_____________________________________________________________
-        #__CARREGAMENTO DE SKIN_____________________________
-        pad = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()    # Carrega a imagem com transparência
+        #___________________________________________________________________________________________
+        #__CARREGAMENTO DE SKIN_____________________________________________________________________
+        # Caminho dinâmico para a textura da esteira
+        pad = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()
         
         
         
-        #_____________________________________________________________
-        #__LOOP PRINCIPAL DO JOGO___________________________
+        #___________________________________________________________________________________________
+        #__LOOP PRINCIPAL DO JOGO___________________________________________________________________
         while self.run:
             
             
-            #__EVENTOS DE ENTRADA_______________________________
+            #_______________________________________________________________________________________
+            #__EVENTOS DE ENTRADA___________________________________________________________________
             for events in pygame.event.get():
-                if events.type == pygame.QUIT:    # Se fechar a janela
-                    self.run = False          # Para o loop do jogo
+                if events.type == pygame.QUIT:    # Clique no 'X' da janela
+                    self.run = False              # Encerra o loop
             
             
             
-            #_____________________________________________________________
-            #__LÓGICA DO JOGO__________________________________
+            #_______________________________________________________________________________________
+            #__LÓGICA DO JOGO_______________________________________________________________________
+            # (Espaço reservado para cálculos de tempo e pontuação)
             
             
             
-            #_____________________________________________________________
-            #__LIMPEZA DA TELA__________________________________
-            self.screen.fill('#5E5B8B')    # Preenchimento de fundo sólido
+            #_______________________________________________________________________________________
+            #__LIMPEZA DA TELA______________________________________________________________________
+            self.screen.fill('#5E5B8B')           # Fundo sólido roxo acinzentado
             
             
             
-            #_____________________________________________________________
-            #__RENDERIZAÇÃO DE OBJETOS__________________________
-            # esteira
+            #_______________________________________________________________________________________
+            #__RENDERIZAÇÃO DE OBJETOS______________________________________________________________
+            
+            # 1. Desenho da Esteira
             self.screen.blit(pad, (self.w/2 - (pad.get_height()/4), 0))
             
-            # chaves
+            # 2. Chaves de Entrada
             self.screen
             
-            # notas
+            # 3. Processamento e Desenho das Notas
             for note in self.notes:
                 
+                # Instanciação da Nota (Caminho fixo temporário)
                 note = Notes('beatmaps/2484096 DETRO - volcanic (Short Ver.)7/Menphiss (1).png', 5, 1, 50)
                 self.notes_group.add(note)
-            self.notes_group.update()
+                
+            self.notes_group.update() # Atualiza a posição de todas as notas
             
-            # notas longas
-            
-            
-            
-            #_____________________________________________________________
-            #__ATUALIZAÇÃO DA TELA______________________________
-            # Mostra o frame renderizado
-            pygame.display.flip()
+            # 4. Notas Longas (Slider/Hold)
             
             
             
-            #_____________________________________________________________
-            #__CONTROLE DE FPS__________________________________
-            # Trava o jogo em 60 FPS
-            self.fps = self.clock.tick(60)
+            #_______________________________________________________________________________________
+            #__ATUALIZAÇÃO DA TELA__________________________________________________________________
+            pygame.display.flip()                 # Envia o frame renderizado para o monitor
+            
+            
+            
+            #_______________________________________________________________________________________
+            #__CONTROLE DE FPS______________________________________________________________________
+            self.fps = self.clock.tick(60)        # Limita o jogo a 60 quadros por segundo
         
         
-        # Encerra o Pygame ao sair do loop
+        # Finalização Segura do Pygame
         pygame.quit()
