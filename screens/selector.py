@@ -3,15 +3,8 @@ import customtkinter as ctk                  # Interface Gráfica
 import os                                    # Sistema de Arquivos
 import random                                # Gerador de Aleatórios
 from pathlib import Path                     # Caminhos de Diretório
-from screens.gameplay import Gameplay           
-from rules.beatmap_reader import Beatmap, Difficult  
-
-
-
-#________FUNÇÃO DE GERAR COR ALEATÓRIA (HEX)________________________________________________________
-def hexa_random() -> str:
-    '''Gera uma cor em formato hexadecimal para a interface.'''
-    return f'#{random.randint(0, 0xFFFFFF):06x}'
+from screens.gameplay import Gameplay          
+from rules.beatmap_reader import Beatmap, ReadBeatmaps 
 
 
 
@@ -49,42 +42,33 @@ class BeatmapsSelector(ctk.CTkFrame):
         
         #___________________________________________________________________________________________
         #__LEITOR DE BEATMAPS EXISTENTES____________________________________________________________
-        self.directory_beatmaps = Path(__file__).parent.parent / 'beatmaps'
+        self.read = ReadBeatmaps('beatmaps')
         
-        if self.directory_beatmaps.exists():
-            
-            # folder_path: Deixa claro que é o caminho da pasta sendo iterada
-            for folder_path in self.directory_beatmaps.iterdir():
+        self.cards = []
+        
+        #_______________________________________________________________________________
+        # CRIAÇÃO DO COMPONENTE VISUAL
+        # map_card: Nome padrão para itens de interface em lista
+        for map_obj in self.read.beatmaps.values():
+            mapp: Beatmap = map_obj
+            for bpd in mapp.difficults:
                 
-                # map_data: Representa o objeto lógico do mapa carregado
-                map_data = Beatmap(folder_path)
+                diff_data = mapp.difficults[bpd]
                 
-                if map_data.is_diret():
-                    
-                    # diff_file: Nome do arquivo de dificuldade (string)
-                    for diff_file in map_data.difficults:
-                        
-                        caminho_completo = os.path.join(folder_path, diff_file)
-                        
-                        # diff_obj: Representa o objeto da dificuldade específica
-                        diff_obj = Difficult(caminho_completo, folder_path)
-                    
-                    #_______________________________________________________________________________
-                    # CRIAÇÃO DO COMPONENTE VISUAL
-                    # map_card: Nome padrão para itens de interface em lista
-                    self.map_card = BeatmapItem(
-                        master=self.scroll_container,
-                        map_ref=map_data,
-                        audio_path=diff_obj.audio_fn,
-                        title_text=diff_obj.song_title,
-                        artist_text=diff_obj.song_artist,
-                        mapper_name=diff_obj.mapper_name,
-                        version_name=diff_obj.diff_version,
-                        od_value=diff_obj.od_value,
-                        key_count=diff_obj.key_count,
-                        map_id=diff_obj.map_uid,
-                        cover_path=diff_obj.preview_ms,
-                        )
+                card = BeatmapItem(
+                    master=self.scroll_container,
+                    audio_file_name=diff_data['AudioFilename'],
+                    map_title=diff_data['Title'],
+                    artist=diff_data['Artist'],
+                    creator=diff_data['Creator'],
+                    version=diff_data['Version'],
+                    overall_difficulty=diff_data['OverallDifficulty'],
+                    beatmap_id=diff_data['BeatmapID'],
+                    circle_size=diff_data['CircleSize'],
+                    preview_time=diff_data['PreviewTime'],
+                    hit_objects=diff_data['HitObjects']
+                    )
+                self.cards.append(card)
 
 
 
@@ -94,32 +78,31 @@ class BeatmapItem(ctk.CTkFrame):
     #_______________________________________________________________________________________________
     #__CONSTRUTOR DO ITEM (BEATMAP)____________________________________________________________________
     def __init__(
-        self, 
-        master: ctk.CTkScrollableFrame, 
-        map_ref: Beatmap, 
-        audio_path: str, 
-        title_text: str, 
-        artist_text: str, 
-        mapper_name: str, 
-        version_name: str, 
-        od_value: float, 
-        key_count: int, 
-        map_id: int, 
-        cover_path: str
+        self,
+        master: ctk.CTk,
+        audio_file_name: str,
+        map_title: str,
+        artist: str,
+        creator: str,
+        version: str,
+        overall_difficulty: str,
+        beatmap_id: str,
+        circle_size: str,
+        preview_time: str,
+        hit_objects: dict[int, int]
+        
     ):
         
-        # ATRIBUTOS LÓGICOS (DADOS)
-        self.map_ref: Beatmap = map_ref
-        self.audio_file: str = audio_path
-        self.title_str: str = title_text
-        self.artist_str: str = artist_text
-        self.mapper_str: str = mapper_name
-        self.version_str: str = version_name
-        self.od: float = od_value
-        self.keys: int = key_count
-        self.uid: int = map_id
-        self.cover_file: str = cover_path
-        
+        self.audio_file_name = audio_file_name
+        self.map_title = map_title
+        self.artist = artist
+        self.creator = creator
+        self.version = version
+        self.overall_difficulty = overall_difficulty
+        self.beatmap_id = beatmap_id
+        self.circle_size = circle_size
+        self.preview_time = preview_time
+        self.hit_objects = hit_objects
         
         #___________________________________________________________________________________________
         #__CAIXA PRINCIPAL DO ITEM (CONTAINER)______________________________________________________
@@ -128,7 +111,7 @@ class BeatmapItem(ctk.CTkFrame):
             corner_radius=5,
             width=50,
             height=50,
-            fg_color=hexa_random(),
+            fg_color="#bb7d7d",
             cursor='hand2'
         )
         
@@ -144,7 +127,7 @@ class BeatmapItem(ctk.CTkFrame):
             master=self,
             text='', 
             corner_radius=10,
-            fg_color=hexa_random()
+            fg_color='#808080'
         )
         self.ui_background_decor.place(relx=0.5, rely=0.4, relwidth=0.25, relheight=0.1, anchor='center')
         self.ui_background_decor.bind('<Button-1>', self.play)
@@ -153,7 +136,7 @@ class BeatmapItem(ctk.CTkFrame):
         # ui_title_label: Rótulo de texto do título
         self.ui_title_label = ctk.CTkLabel(
             master=self,
-            text=self.title_str,
+            text=map_title,
             font=('Roboto', 18, 'bold'),
             text_color='#FFFFFF'
         )
@@ -164,11 +147,25 @@ class BeatmapItem(ctk.CTkFrame):
         # ui_artist_label: Rótulo de texto do artista
         self.ui_artist_label = ctk.CTkLabel(
             master=self,
-            text=self.artist_str,
+            text=artist,
             font=('Roboto', 12, 'italic'),
             text_color='#CCCCCC',
             fg_color='black'
         )
+        self.ui_artist_label.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_artist_label.bind('<Button-1>', self.play)
     
-    def play(self):
-        self.game = Gameplay()
+    def play(self, event=None):
+        self.game = Gameplay(
+            'padrão',
+            audio_file_name=self.audio_file_name,
+            map_title=self.map_title, 
+            artist=self.artist,
+            creator=self.creator, 
+            version=self.version,
+            overall_difficulty=self.overall_difficulty,
+            beatmap_id=self.beatmap_id,
+            circle_size=self.circle_size,
+            preview_time=self.preview_time,
+            hit_objects=self.hit_objects
+        )

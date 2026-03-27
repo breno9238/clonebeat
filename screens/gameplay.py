@@ -9,26 +9,27 @@ class Gameplay:
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_________________________________________________________
-    def __init__(self, skin: str, music: str, title: str, artist: str, creator: str, version: str, od: float, keys: int, map_id: int, preview: str, notes: list):
+    def __init__(
+        self, 
+        skin: str,
+        audio_file_name: str,
+        map_title: str,
+        artist: str,
+        creator: str,
+        version: str,
+        overall_difficulty: str,
+        beatmap_id: str,
+        circle_size: str,
+        preview_time: str,
+        hit_objects: dict[int, int]):
         
         # Inicialização do Pygame e Coleta de Dados do Monitor
         pygame.init()                       # Inicia os módulos internos
         info = pygame.display.Info()        # Pega as specs do monitor do usuário
         
-        # Atribuição de Atributos (Dados do Mapa)
-        self.music = music
-        self.title = title
-        self.artist = artist
-        self.creator = creator
-        self.version = version
-        self.od = od
-        self.key = keys
-        self.id = map_id
-        self.preview = preview
-        
         # Configurações de Skin e Grupos de Sprites
         self.skin = 'padrão'
-        self.notes = notes
+        self.notes = Notes
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         
         
@@ -110,3 +111,9 @@ class Gameplay:
         
         # Finalização Segura do Pygame
         pygame.quit()
+
+if __name__ == '__main__':
+    
+    test = Gameplay(
+        'padrão', 
+            'C:\Users\Mecanica\OneDrive\Desktop\clonebeat\beatmaps\2484096 DETRO - volcanic (Short Ver.)\D#5.wav',)
