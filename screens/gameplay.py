@@ -1,6 +1,6 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
-from rules.note import Notes        # Classe das notas musicais
+from rules.note import Note        # Classe das notas musicais
 
 
 
@@ -29,7 +29,7 @@ class Gameplay:
         
         # Configurações de Skin e Grupos de Sprites
         self.skin = 'padrão'
-        self.notes = Notes
+        self.notes = 4
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         
         
@@ -86,12 +86,9 @@ class Gameplay:
             self.screen
             
             # 3. Processamento e Desenho das Notas
-            for note in self.notes:
-                
-                # Instanciação da Nota (Caminho fixo temporário)
-                note = Notes('beatmaps/2484096 DETRO - volcanic (Short Ver.)7/Menphiss (1).png', 5, 1, 50)
+            for note in range(self.notes):
+                note = Note('skins/padrão/blue_note.jpeg', 5, 1, 50)
                 self.notes_group.add(note)
-                
             self.notes_group.update() # Atualiza a posição de todas as notas
             
             # 4. Notas Longas (Slider/Hold)
@@ -111,9 +108,3 @@ class Gameplay:
         
         # Finalização Segura do Pygame
         pygame.quit()
-
-if __name__ == '__main__':
-    
-    test = Gameplay(
-        'padrão', 
-            'C:\Users\Mecanica\OneDrive\Desktop\clonebeat\beatmaps\2484096 DETRO - volcanic (Short Ver.)\D#5.wav',)

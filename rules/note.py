@@ -4,7 +4,7 @@ import pygame                       # Motor de jogo para manipulação de sprite
 
 
 #________CLASSE DE NOTAS MUSICAIS (SPRITES)_________________________________________________________
-class Notes(pygame.sprite.Sprite):
+class Note(pygame.sprite.Sprite):
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR DA NOTA___________________________________________________________________________
