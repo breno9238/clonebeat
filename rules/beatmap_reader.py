@@ -35,7 +35,7 @@ class ReadBeatmaps:
         # Cria dicionário de beatmaps {pasta: Beatmap}
         self.beatmaps: dict[Path, Beatmap] = {d: None for d in self.path.glob('*/')}
         for bp in self.beatmaps:
-            self.beatmaps[bp] = Beatmap(bp)           # Instância de Beatmap
+            self.beatmaps[bp] = Beatmap(bp, self.path)           # Instância de Beatmap
             self.beatmaps_list.append(self.beatmaps[bp])
 
 
@@ -45,7 +45,7 @@ class Beatmap:
     Representa um beatmap completo, contendo metadados e dificuldades (.osu).
     """
     
-    def __init__(self, beatmap: str | Path):
+    def __init__(self, beatmap: str | Path, dir_path):
         """
         Inicializa o Beatmap.
         
@@ -53,9 +53,8 @@ class Beatmap:
             beatmap (str | Path): Caminho para a pasta do beatmap.
         """
         self.path: Path = Path(beatmap)                                  # Caminho do beatmap
-        self.name: str = beatmap.name                                     # Nome da pasta
-        self.background: Path | None = next(beatmap.glob('*.png'),       # Background opcional
-                                           next(beatmap.glob('*.jpeg'), None))
+        self.name: str = beatmap.stem                                     # Nome da pasta
+        self.background: Path | None = next(beatmap.glob('*.png'), next(beatmap.glob('*.jpeg'), None))
         
         # Cria dicionário de dificuldades {arquivo.osu: None inicialmente}
         self.difficults: dict[Path, dict] = {d: None for d in beatmap.glob('*.osu')}
@@ -85,7 +84,7 @@ class Beatmap:
                         
                         # Atribui os valores aos campos corretos usando match-case
                         match key_name:
-                            case 'AudioFilename':     diff_data['AudioFilename'] = value_content
+                            case 'AudioFilename':     diff_data['AudioFilename'] = Path(self.path, value_content)
                             case 'Title':             diff_data['Title'] = value_content
                             case 'Artist':            diff_data['Artist'] = value_content
                             case 'Creator':           diff_data['Creator'] = value_content
@@ -108,8 +107,8 @@ class Beatmap:
                     if is_hit_objects_section:
                         data_points = line.split(',')
                         if len(data_points) >= 3:
-                            timestamp = data_points[2]       # Tempo da nota em ms
-                            pos_x = data_points[0]          # Posição X da nota
+                            timestamp = int(data_points[2])       # Tempo da nota em ms
+                            pos_x = int(data_points[0])          # Posição X da nota
                             self.difficults[diff]['HitObjects'][timestamp] = pos_x
 
 

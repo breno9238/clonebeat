@@ -21,7 +21,6 @@ class BeatmapsSelector(ctk.CTkFrame):
     def __init__(self, master):
         """
         Inicializa o frame do seletor e cria todos os cards de beatmaps.
-
         Parâmetros:
         master: widget pai (geralmente a janela principal)
         """
@@ -60,7 +59,7 @@ class BeatmapsSelector(ctk.CTkFrame):
         # CRIAÇÃO DOS CARDS DE BEATMAP
         # Itera sobre todos os beatmaps lidos e cria visualmente os cards
         for map_obj in self.read.beatmaps.values():
-            map: Beatmap = map_obj             # Converte para objeto Beatmap
+            map: Beatmap = map_obj # Converte para objeto Beatmap
             card = BeatmapItem(self.scroll_container)  # Cria card principal
             self.cards.append(card)            # Adiciona à lista de cards
             
@@ -92,6 +91,9 @@ class BeatmapsSelector(ctk.CTkFrame):
                 card.artist = data['Artist']
                 card.creator = data['Creator']
                 card.preview_time = data['PreviewTime']
+                # Posiciona o card no topo da lista
+                card.ui_show()
+                card.pack(side='top', fill='x', padx=10, pady=10, expand=True)
 
 
 #__________________________________________________________________________________________________
@@ -107,7 +109,7 @@ class BeatmapItem(ctk.CTkFrame):
     def __init__(self, master):
         """
         Inicializa o card principal do beatmap.
-
+        
         Parâmetros:
         master: widget pai (geralmente a lista rolável)
         """
@@ -128,58 +130,57 @@ class BeatmapItem(ctk.CTkFrame):
             corner_radius=5,
             width=50,
             height=50,
-            fg_color="#bb7d7d",
+            fg_color="#7d86bb",
             cursor='hand2'   # Cursor muda ao passar por cima
         )
-        # Posiciona o card no topo da lista
-        self.pack(side='top', fill='x', padx=10, pady=10, expand=True)
         # Permite clicar no card para expandir ou recolher dificuldades
         self.bind('<Button-1>', self.select)
-        
+    
+    def ui_show(self):
         #__________________________________________________________________________________________
         # WIDGETS DE INTERFACE (UI)
         
         # Decoração visual interna (label cinza)
-        self.ui_background_decor = ctk.CTkLabel(
+        self.ui_background = ctk.CTkLabel(
             master=self,
             text='',
             corner_radius=10,
             fg_color='#808080'
         )
-        self.ui_background_decor.place(relx=0.5, rely=0.4, relwidth=0.25, relheight=0.1, anchor='center')
-        self.ui_background_decor.bind('<Button-1>', self.select)
+        self.ui_background.place(relx=0.5, rely=0.4, relwidth=0.25, relheight=0.1, anchor='center')
+        self.ui_background.bind('<Button-1>', self.select)
         
         # Label do título
-        self.ui_title_label = ctk.CTkLabel(
+        self.ui_title = ctk.CTkLabel(
             master=self,
             text=self.title,
             font=('Roboto', 18, 'bold'),
             text_color='#FFFFFF'
         )
-        self.ui_title_label.place(relx=0.5, rely=0.1, relwidth=0.9, relheight=0.3, anchor='center')
-        self.ui_title_label.bind('<Button-1>', self.select)
+        self.ui_title.place(relx=0.5, rely=0.1, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_title.bind('<Button-1>', self.select)
         
         # Label do artista
-        self.ui_artist_label = ctk.CTkLabel(
+        self.ui_artist = ctk.CTkLabel(
             master=self,
             text=self.artist,
             font=('Roboto', 12, 'italic'),
             text_color='#CCCCCC',
             fg_color='black'
         )
-        self.ui_artist_label.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
-        self.ui_artist_label.bind('<Button-1>', self.select)
+        self.ui_artist.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_artist.bind('<Button-1>', self.select)
         
         # Label do criador
-        self.ui_creator_label = ctk.CTkLabel(
+        self.ui_creator = ctk.CTkLabel(
             master=self,
             text=self.creator,
             font=('Roboto', 12, 'italic'),
             text_color='#CCCCCC',
             fg_color='black'
         )
-        self.ui_creator_label.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
-        self.ui_creator_label.bind('<Button-1>', self.select)
+        self.ui_creator.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_creator.bind('<Button-1>', self.select)
     
     #______________________________________________________________________________________________
     # FUNÇÃO PARA EXPANDIR/RECOLHER DIFICULDADES
@@ -235,16 +236,18 @@ class DifficultItem(ctk.CTkFrame):
         self.preview_time = preview_time
         self.hit_objects = hit_objects
         
+        self.selected_diff = False
+        
         # Caixa principal do item
         super().__init__(
             master=master,
             corner_radius=5,
             width=50,
             height=50,
-            fg_color="#bb7d7d",
+            fg_color="#7d86bb",
             cursor='hand2'
         )
-        self.bind('<Button-1>', self.play)  # Inicia o jogo ao clicar
+        self.bind('<Button-1>', self.select_diff)  # Inicia o jogo ao clicar
         
         # Decoração visual interna
         self.ui_background = ctk.CTkLabel(
@@ -254,7 +257,7 @@ class DifficultItem(ctk.CTkFrame):
             fg_color='#808080'
         )
         self.ui_background.place(relx=0.5, rely=0.4, relwidth=0.25, relheight=0.1, anchor='center')
-        self.ui_background.bind('<Button-1>', self.play)
+        self.ui_background.bind('<Button-1>', self.select_diff)
         
         # Label do título
         self.ui_title = ctk.CTkLabel(
@@ -264,7 +267,7 @@ class DifficultItem(ctk.CTkFrame):
             text_color='#FFFFFF'
         )
         self.ui_title.place(relx=0.5, rely=0.1, relwidth=0.9, relheight=0.3, anchor='center')
-        self.ui_title.bind('<Button-1>', self.play)
+        self.ui_title.bind('<Button-1>', self.select_diff)
         
         # Label do artista
         self.ui_artist = ctk.CTkLabel(
@@ -274,25 +277,93 @@ class DifficultItem(ctk.CTkFrame):
             text_color='#CCCCCC',
             fg_color='black'
         )
-        self.ui_artist.place(relx=0.6, rely=0.3, relwidth=0.9, relheight=0.3, anchor='center')
-        self.ui_artist.bind('<Button-1>', self.play)
+        self.ui_artist.place(relx=0.6, rely=0.6, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_artist.bind('<Button-1>', self.select_diff)
+        
+        # Label do artista
+        self.ui_creator = ctk.CTkLabel(
+            master=self,
+            text=creator,
+            font=('Roboto', 12, 'italic'),
+            text_color='#CCCCCC',
+            fg_color='black'
+        )
+        self.ui_creator.place(relx=0.6, rely=0.9, relwidth=0.9, relheight=0.3, anchor='center')
+        self.ui_creator.bind('<Button-1>', self.select_diff)
     
     #______________________________________________________________________________________________
     # FUNÇÃO PARA INICIAR JOGABILIDADE
-    def play(self, event=None):
+    def select_diff(self, event=None):
         """
-        Inicia a tela de Gameplay para este beatmap.
+        Seleciona a difficuldade do beatmap e inicia a tela de Gameplay para este beatmap.
         """
-        self.game = Gameplay(
-            'padrão',                # Modo padrão
-            self.audio_file,
-            self.map_title,
-            self.artist,
-            self.creator,
-            self.version,
-            self.overall_difficulty,
-            self.beatmap_id,
-            self.circle_size,
-            self.preview_time,
-            self.hit_objects
+        if not self.select_diff:
+            info = InfoBeatmapUI(
+                self,                # Modo padrão
+                self.audio_file,
+                self.map_title,
+                self.artist,
+                self.creator,
+                self.version,
+                self.overall_difficulty,
+                self.beatmap_id,
+                self.circle_size,
+                self.preview_time,
+                self.hit_objects
+                )
+        
+        if self.selected_diff:
+            self.game = Gameplay(
+                'padrão',                # Modo padrão
+                self.audio_file,
+                self.map_title,
+                self.artist,
+                self.creator,
+                self.version,
+                self.overall_difficulty,
+                self.beatmap_id,
+                self.circle_size,
+                self.preview_time,
+                self.hit_objects
+            )
+
+
+
+class InfoBeatmapUI(ctk.CTkFrame):
+    
+    def __init__(
+        self,
+        master,                # Modo padrão
+        audio_file,
+        map_title,
+        artist,
+        creator,
+        version,
+        overall_difficulty,
+        beatmap_id,
+        circle_size,
+        preview_time,
+        hit_objects
+        ):
+        
+        # Atributos principais do DifficultItem
+        self.audio_file = audio_file
+        self.map_title = map_title
+        self.artist = artist
+        self.creator = creator
+        self.version = version
+        self.overall_difficulty = overall_difficulty
+        self.beatmap_id = beatmap_id
+        self.circle_size = circle_size
+        self.preview_time = preview_time
+        self.hit_objects = hit_objects
+        
+        # Inicializa o Frame principal do seletor
+        super().__init__(
+            master=master,
+            corner_radius=0,
+            fg_color="#2e6a7c",     #1d1d1d
+            border_width=0
         )
+        # Posiciona o frame para ocupar toda a área do pai
+        self.place(relx=0, rely=0, relwidth=0.4, relheight=1)

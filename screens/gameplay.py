@@ -1,6 +1,7 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
 from rules.note import Note        # Classe das notas musicais
+from pathlib import Path
 
 
 
@@ -12,7 +13,7 @@ class Gameplay:
     def __init__(
         self, 
         skin: str,
-        audio_file_name: str,
+        audio_file_name: Path,
         map_title: str,
         artist: str,
         creator: str,
@@ -25,14 +26,19 @@ class Gameplay:
         
         # Inicialização do Pygame e Coleta de Dados do Monitor
         pygame.init()                       # Inicia os módulos internos
+        pygame.mixer.init()
         info = pygame.display.Info()        # Pega as specs do monitor do usuário
+        
         
         # Configurações de Skin e Grupos de Sprites
         self.skin = 'padrão'
         self.notes = 4
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         
-        
+        # Configuração da Música
+        self.audio = audio_file_name
+        pygame.mixer.music.load(self.audio)
+        pygame.mixer.music.play()
         
         #___________________________________________________________________________________________
         #__CONFIGURAÇÕES DE TELA____________________________________________________________________
@@ -49,7 +55,15 @@ class Gameplay:
         # Caminho dinâmico para a textura da esteira
         pad = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()
         
-        
+        for timestamp, pos_x in hit_objects.items():
+            
+            match pos_x:
+                case 64:  note: Note = Note('skins/padrão/blue_note.jpeg', 5, timestamp, pos_x, 0)
+                case 192: note: Note = Note('skins/padrão/red_note.jpeg', 5, timestamp, pos_x, 0)
+                case 320: note: Note = Note('skins/padrão/red_note.jpeg', 5, timestamp, pos_x, 0)
+                case 448: note: Note = Note('skins/padrão/blue_note.jpeg', 5, timestamp, pos_x, 0)
+            
+            self.notes_group.add(note)
         
         #___________________________________________________________________________________________
         #__LOOP PRINCIPAL DO JOGO___________________________________________________________________
@@ -82,17 +96,16 @@ class Gameplay:
             # 1. Desenho da Esteira
             self.screen.blit(pad, (self.w/2 - (pad.get_height()/4), 0))
             
-            # 2. Chaves de Entrada
-            self.screen
-            
             # 3. Processamento e Desenho das Notas
-            for note in range(self.notes):
-                note = Note('skins/padrão/blue_note.jpeg', 5, 1, 50)
-                self.notes_group.add(note)
+            self.time = pygame.mixer.music.get_pos()
+            
+            for note in self.notes_group:
+                note: Note
+                if self.time > note.timestamp + 200:
+                    note.kill()
+            self.notes_group.draw(self.screen)
             self.notes_group.update() # Atualiza a posição de todas as notas
-            
             # 4. Notas Longas (Slider/Hold)
-            
             
             
             #_______________________________________________________________________________________
