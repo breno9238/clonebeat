@@ -1,5 +1,5 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS_________________________________________________________________
-from screens.selector import BeatmapsSelector   # Tela de seleção de músicas
+from screens.selector_beatmap import BeatmapsSelector   # Tela de seleção de músicas
 from screens.config import Config               # Tela de configurações do sistema
 import tkinter as tk                            # Biblioteca base do Tk
 import customtkinter as ctk                     # Framework de UI moderna

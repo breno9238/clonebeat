@@ -1,3 +1,14 @@
-import json
+from pathlib import Path
+import zipfile
 
-with open () as arquivo:
+class SkinReader:
+    
+    def __init__(self):
+        
+        
+
+class Skin:
+    
+    def __init__(self):
+        
+        
