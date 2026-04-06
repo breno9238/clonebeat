@@ -1,6 +1,7 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
 from rules.note import Note        # Classe das notas musicais
+from rules.key import Key
 from pathlib import Path
 
 
@@ -34,6 +35,10 @@ class Gameplay:
         self.skin = 'padrão'
         self.notes = 4
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
+        self.keys_group = pygame.sprite.Group()
+        self.hit_objects = hit_objects
+        self.hit_queue = sorted(self.hit_objects.items())
+        self.next_note_index = 0
         
         # Configuração da Música
         self.audio = audio_file_name
@@ -42,33 +47,49 @@ class Gameplay:
         
         #___________________________________________________________________________________________
         #__CONFIGURAÇÕES DE TELA____________________________________________________________________
-        self.w = info.current_w - 100                             # Largura (Monitor - 100px)
-        self.h = info.current_h - 100                             # Altura (Monitor - 100px)
+        self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
+        self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
         self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
-        self.clock = pygame.time.Clock()                          # Controlador de FPS
-        self.run = True                                           # Controle do Loop
+        self.clock  = pygame.time.Clock()                          # Controlador de FPS
+        self.run    = True                                         # Controle do Loop
         
         
         
         #___________________________________________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________________________________________________
         # Caminho dinâmico para a textura da esteira
-        pad = pygame.image.load('skins/&&&/esteira.png'.replace('&&&', skin)).convert_alpha()
+        self.pad = pygame.image.load(f'skins/{skin}/esteira.png').convert_alpha()
         
-        for timestamp, pos_x in hit_objects.items():
-            
-            match pos_x:
-                case 64:  note: Note = Note('skins/padrão/blue_note.jpeg', 5, timestamp, pos_x, 0)
-                case 192: note: Note = Note('skins/padrão/red_note.jpeg', 5, timestamp, pos_x, 0)
-                case 320: note: Note = Note('skins/padrão/red_note.jpeg', 5, timestamp, pos_x, 0)
-                case 448: note: Note = Note('skins/padrão/blue_note.jpeg', 5, timestamp, pos_x, 0)
-            
-            self.notes_group.add(note)
+        # Carrega a imagem e otimiza para transparência (Alpha)
+        self.images = {
+            'blue': pygame.image.load(f'skins/{skin}/blue_note.jpeg').convert_alpha(),
+            'red': pygame.image.load(f'skins/{skin}/red_note.jpeg').convert_alpha()
+        }
         
+        self.pre_render_notes = {
+            'blue': pygame.transform.scale(self.images['blue'], (80, 80)),
+            'red': pygame.transform.scale(self.images['red'], (80, 80))
+        }
+        
+        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
+        self.masks = {
+            'blue': pygame.mask.from_surface(self.pre_render_notes['blue']),
+            'red': pygame.mask.from_surface(self.pre_render_notes['red'])
+        }
+        
+        self.keys = {
+            pygame.K_a:   Key('skins/padrão/key.jpeg', 64, self.h-100, self.keys_group),
+            pygame.K_s:   Key('skins/padrão/key.jpeg', 192, self.h-100, self.keys_group),
+            pygame.K_KP4: Key('skins/padrão/key.jpeg', 320, self.h-100, self.keys_group),
+            pygame.K_KP5: Key('skins/padrão/key.jpeg', 448, self.h-100, self.keys_group)
+        }
+        
+        self.hit_line = pygame.rect.Rect(0, self.h-100, self.w, 2)
+    
+    def start(self):
         #___________________________________________________________________________________________
         #__LOOP PRINCIPAL DO JOGO___________________________________________________________________
         while self.run:
-            
             
             #_______________________________________________________________________________________
             #__EVENTOS DE ENTRADA___________________________________________________________________
@@ -76,11 +97,32 @@ class Gameplay:
                 if events.type == pygame.QUIT:    # Clique no 'X' da janela
                     self.run = False              # Encerra o loop
             
-            
-            
             #_______________________________________________________________________________________
             #__LÓGICA DO JOGO_______________________________________________________________________
             # (Espaço reservado para cálculos de tempo e pontuação)
+            
+            # impact = pygame.sprite.groupcollide(self.keys_group, self.notes_group, False, True)
+            # all_notes_impacted: dict[Note, dict[int, int]] = {}
+            
+            # for key, notes_impacted in impact.items():
+            #     for note in notes_impacted:
+            #         note.kill()
+            #         all_notes_impacted[note] = [note.timestamp, note.pos_x, note.rect.y]
+            
+            # for note_impact in all_notes_impacted.items:
+            #     note_impact: list[int]
+            #     for note_timestamp, note_pos_x, note_pos_y in note_impact:
+            #         if self.h-100-note_pos_y > 20:
+                        
+                    
+            #         if self.h-100-note_pos_y > 192:
+                        
+                    
+            #         if self.h-100-note_pos_y > 320:
+                        
+                    
+            #         if self.h-100-note_pos_y > 448:
+                        
             
             
             
@@ -88,31 +130,36 @@ class Gameplay:
             #__LIMPEZA DA TELA______________________________________________________________________
             self.screen.fill('#5E5B8B')           # Fundo sólido roxo acinzentado
             
-            
-            
             #_______________________________________________________________________________________
             #__RENDERIZAÇÃO DE OBJETOS______________________________________________________________
             
             # 1. Desenho da Esteira
-            self.screen.blit(pad, (self.w/2 - (pad.get_height()/4), 0))
+            self.screen.blit(self.pad, (self.w/2 - (self.pad.get_height()/4), 0))
             
             # 3. Processamento e Desenho das Notas
             self.time = pygame.mixer.music.get_pos()
             
-            for note in self.notes_group:
-                note: Note
-                if self.time > note.timestamp + 200:
-                    note.kill()
-            self.notes_group.draw(self.screen)
-            self.notes_group.update() # Atualiza a posição de todas as notas
-            # 4. Notas Longas (Slider/Hold)
+            while self.next_note_index < len(self.hit_queue):
+                timestamp, pos_x = self.hit_queue[self.next_note_index]
+                
+                if timestamp - self.time < 2000:
+                    match pos_x:
+                        case 64:  Note(self.pre_render_notes['blue'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
+                        case 192: Note(self.pre_render_notes['red'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
+                        case 320: Note(self.pre_render_notes['red'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
+                        case 448: Note(self.pre_render_notes['blue'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
+                    
+                    self.next_note_index += 1
+                else:
+                    break
             
+            self.notes_group.draw(self.screen)
+            self.notes_group.update(self.time, 600, self.hit_line) # Atualiza a posição de todas as notas
+            # 4. Notas Longas (Slider/Hold)
             
             #_______________________________________________________________________________________
             #__ATUALIZAÇÃO DA TELA__________________________________________________________________
             pygame.display.flip()                 # Envia o frame renderizado para o monitor
-            
-            
             
             #_______________________________________________________________________________________
             #__CONTROLE DE FPS______________________________________________________________________

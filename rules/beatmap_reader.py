@@ -15,7 +15,7 @@ class ReadBeatmaps:
         '''
         Inicializa a leitura de beatmaps.
         
-        Args:
+        Argumentos:
             path (str): Caminho da pasta raiz contendo beatmaps.
         '''
         
@@ -48,6 +48,8 @@ class ReadBeatmaps:
             self.beatmaps_list.append(self.beatmaps[beatmap])       # Guarda a classe criada para usar depois
 
 
+
+
 #-________OBJETO DE DADOS DO BEATMAP (BEATMAP)______________________________________________________
 class Beatmap:
     """
@@ -58,12 +60,9 @@ class Beatmap:
         """
         Inicializa o Beatmap.
         
-        Args:
+        Argumentos:
             beatmap (str | Path): Caminho para a pasta do beatmap.
         """
-        
-        # Caminho do beatmap
-        self.path: Path = Path(beatmap) 
         
         # Nome da pasta
         self.name: str = beatmap.stem    
@@ -120,7 +119,7 @@ class Beatmap:
                         # Guarda o valor de cada campo/chave util em uma variavel
                         # Title: Apollo -> self.title = 'Apollo'
                         match key_name:
-                            case 'AudioFilename':     diff_data['AudioFilename'] = Path(self.path, value_content)
+                            case 'AudioFilename':     diff_data['AudioFilename'] = Path(beatmap, value_content)
                             case 'Title':             diff_data['Title'] = value_content
                             case 'Artist':            diff_data['Artist'] = value_content
                             case 'Creator':           diff_data['Creator'] = value_content
@@ -150,6 +149,7 @@ class Beatmap:
                             # música em que a nota aparece), e o valor(pos_x, posição x em números
                             # que representa em qual das 4 colunas a nota está)
                             self.difficults[diff]['HitObjects'][timestamp] = pos_x
+
 
 
 # Teste local pra listar todos os beatmaps atuais no terminal
