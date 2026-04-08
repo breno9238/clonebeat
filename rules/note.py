@@ -8,7 +8,7 @@ class Note(pygame.sprite.Sprite):
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR DA NOTA___________________________________________________________________________
-    def __init__(self, png_img: pygame.Surface, speed_val: float, timestamp: int, pos_x: int, end: int, group: pygame.sprite.Group):
+    def __init__(self, png_img: pygame.Surface, timestamp: int, pos_x: int, end: int, group: pygame.sprite.Group):
         '''
         Inicializa um objeto de nota musical que desce pela tela.
         
@@ -22,7 +22,6 @@ class Note(pygame.sprite.Sprite):
         super().__init__(group)
         
         # Configurações de Movimento
-        self.speed: float = speed_val      # Define a cadência da queda
         self.timestamp = timestamp
         self.pos_x = pos_x
         #___________________________________________________________________________________________
@@ -34,14 +33,16 @@ class Note(pygame.sprite.Sprite):
         self.rect: pygame.Rect = png_img.get_rect()
         
         self.rect.x = pos_x
+        self.rect.y = 0
     
     #_______________________________________________________________________________________________
     #__ATUALIZAÇÃO DE FRAME_________________________________________________________________________
-    def update(self, base_y: int, current_time, hit_line: pygame.sprite.Sprite):
+    def update(self, current_time, speed, hit_line=None):
         '''
         Executa a lógica de movimento a cada ciclo do loop principal.
         Faz a nota descer verticalmente somando a velocidade ao eixo Y.
         '''
-        self.rect.y = 600 - (self.timestamp - current_time) * self.speed          # Incrementa a posição Y com base na velocidade
-        if self.rect.colliderect(hit_line):
-            self.kill()
+        # self.rect.y = 600 - (self.timestamp - current_time) * speed          # Incrementa a posição Y com base na velocidade
+        # if self.rect.colliderect(hit_line):
+        #     self.kill()
+        self.rect.y += speed

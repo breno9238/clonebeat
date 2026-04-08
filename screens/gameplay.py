@@ -1,5 +1,6 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
+import json
 from rules.note import Note        # Classe das notas musicais
 from rules.key import Key
 from pathlib import Path
@@ -28,17 +29,17 @@ class Gameplay:
         # Inicialização do Pygame e Coleta de Dados do Monitor
         pygame.init()                       # Inicia os módulos internos
         pygame.mixer.init()
-        info = pygame.display.Info()        # Pega as specs do monitor do usuário
+        info = pygame.display.Info()        # Pega as notecs do monitor do usuário
         
         
         # Configurações de Skin e Grupos de Sprites
-        self.skin = 'padrão'
+        self.skin = skin
         self.notes = 4
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         self.keys_group = pygame.sprite.Group()
         self.hit_objects = hit_objects
-        self.hit_queue = sorted(self.hit_objects.items())
-        self.next_note_index = 0
+        self.hit_list = sorted(self.hit_objects.items())
+        self.next_note = 0
         
         # Configuração da Música
         self.audio = audio_file_name
@@ -57,18 +58,18 @@ class Gameplay:
         
         #___________________________________________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________________________________________________
-        # Caminho dinâmico para a textura da esteira
+        
         self.pad = pygame.image.load(f'skins/{skin}/esteira.png').convert_alpha()
         
         # Carrega a imagem e otimiza para transparência (Alpha)
-        self.images = {
-            'blue': pygame.image.load(f'skins/{skin}/blue_note.jpeg').convert_alpha(),
-            'red': pygame.image.load(f'skins/{skin}/red_note.jpeg').convert_alpha()
+        self.pre_render_notes = {
+            'blue': pygame.image.load(f'skins/{skin}/blue_note.png').convert_alpha(),
+            'red': pygame.image.load(f'skins/{skin}/red_note.png').convert_alpha()
         }
         
         self.pre_render_notes = {
-            'blue': pygame.transform.scale(self.images['blue'], (80, 80)),
-            'red': pygame.transform.scale(self.images['red'], (80, 80))
+            'blue': pygame.transform.scale(self.pre_render_notes['blue'], (80, 80)),
+            'red': pygame.transform.scale(self.pre_render_notes['red'], (80, 80))
         }
         
         # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
@@ -76,12 +77,12 @@ class Gameplay:
             'blue': pygame.mask.from_surface(self.pre_render_notes['blue']),
             'red': pygame.mask.from_surface(self.pre_render_notes['red'])
         }
-        
+        print("loop")
         self.keys = {
-            pygame.K_a:   Key('skins/padrão/key.jpeg', 64, self.h-100, self.keys_group),
-            pygame.K_s:   Key('skins/padrão/key.jpeg', 192, self.h-100, self.keys_group),
-            pygame.K_KP4: Key('skins/padrão/key.jpeg', 320, self.h-100, self.keys_group),
-            pygame.K_KP5: Key('skins/padrão/key.jpeg', 448, self.h-100, self.keys_group)
+            pygame.K_a:   Key('skins/padrão/key.png', 64, self.h-400, self.keys_group),
+            pygame.K_s:   Key('skins/padrão/key.png', 192, self.h-400, self.keys_group),
+            pygame.K_KP4: Key('skins/padrão/key.png', 320, self.h-400, self.keys_group),
+            pygame.K_KP5: Key('skins/padrão/key.png', 448, self.h-400, self.keys_group)
         }
         
         self.hit_line = pygame.rect.Rect(0, self.h-100, self.w, 2)
@@ -139,22 +140,22 @@ class Gameplay:
             # 3. Processamento e Desenho das Notas
             self.time = pygame.mixer.music.get_pos()
             
-            while self.next_note_index < len(self.hit_queue):
-                timestamp, pos_x = self.hit_queue[self.next_note_index]
+            while self.next_note < len(self.hit_list):
+                timestamp, pos_x = self.hit_list[self.next_note]
                 
                 if timestamp - self.time < 2000:
                     match pos_x:
-                        case 64:  Note(self.pre_render_notes['blue'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
-                        case 192: Note(self.pre_render_notes['red'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
-                        case 320: Note(self.pre_render_notes['red'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
-                        case 448: Note(self.pre_render_notes['blue'], 5, timestamp, pos_x, self.h*0.9, self.notes_group)
+                        case 64:  Note(self.pre_render_notes['blue'], timestamp, self.w*0.35, self.h*0.9, self.notes_group)
+                        case 192: Note(self.pre_render_notes['red'], timestamp, self.w*0.45, self.h*0.9, self.notes_group)
+                        case 320: Note(self.pre_render_notes['red'], timestamp, self.w*0.55, self.h*0.9, self.notes_group)
+                        case 448: Note(self.pre_render_notes['blue'], timestamp, self.w*0.65, self.h*0.9, self.notes_group)
                     
-                    self.next_note_index += 1
+                    self.next_note += 1
                 else:
                     break
             
             self.notes_group.draw(self.screen)
-            self.notes_group.update(self.time, 600, self.hit_line) # Atualiza a posição de todas as notas
+            self.notes_group.update(self.time, 20) # Atualiza a posição de todas as notas
             # 4. Notas Longas (Slider/Hold)
             
             #_______________________________________________________________________________________

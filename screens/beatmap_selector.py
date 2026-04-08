@@ -326,6 +326,7 @@ class DifficultItem(ctk.CTkFrame):
                 self.preview_time,
                 self.hit_objects
             )
+            self.game.start()
 
 
 
