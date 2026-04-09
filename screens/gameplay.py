@@ -34,7 +34,6 @@ class Gameplay:
         
         # Configurações de Skin e Grupos de Sprites
         self.skin = skin
-        self.notes = 4
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         self.keys_group = pygame.sprite.Group()
         self.hit_objects = hit_objects
