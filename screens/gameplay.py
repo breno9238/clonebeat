@@ -38,7 +38,7 @@ class Gameplay:
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         self.keys_group = pygame.sprite.Group()
         self.hit_objects = hit_objects
-        self.hit_list = sorted(self.hit_objects.items())
+        self.hit_list = sorted(self.hit_objects)
         self.next_note = 0
         
         # Configuração da Música
@@ -68,8 +68,8 @@ class Gameplay:
         }
         
         self.pre_render_notes = {
-            'blue': pygame.transform.scale(self.pre_render_notes['blue'], (80, 80)),
-            'red': pygame.transform.scale(self.pre_render_notes['red'], (80, 80))
+            'blue': pygame.transform.scale(self.pre_render_notes['blue'], (100, 100)),
+            'red': pygame.transform.scale(self.pre_render_notes['red'], (100, 100))
         }
         
         # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
@@ -77,7 +77,7 @@ class Gameplay:
             'blue': pygame.mask.from_surface(self.pre_render_notes['blue']),
             'red': pygame.mask.from_surface(self.pre_render_notes['red'])
         }
-        print("loop")
+        
         self.keys = {
             pygame.K_a:   Key('skins/padrão/key.png', 64, self.h-400, self.keys_group),
             pygame.K_s:   Key('skins/padrão/key.png', 192, self.h-400, self.keys_group),
@@ -146,9 +146,9 @@ class Gameplay:
                 if timestamp - self.time < 2000:
                     match pos_x:
                         case 64:  Note(self.pre_render_notes['blue'], timestamp, self.w*0.35, self.h*0.9, self.notes_group)
-                        case 192: Note(self.pre_render_notes['red'], timestamp, self.w*0.45, self.h*0.9, self.notes_group)
-                        case 320: Note(self.pre_render_notes['red'], timestamp, self.w*0.55, self.h*0.9, self.notes_group)
-                        case 448: Note(self.pre_render_notes['blue'], timestamp, self.w*0.65, self.h*0.9, self.notes_group)
+                        case 192: Note(self.pre_render_notes['red'], timestamp, self.w*0.42, self.h*0.9, self.notes_group)
+                        case 320: Note(self.pre_render_notes['red'], timestamp, self.w*0.48, self.h*0.9, self.notes_group)
+                        case 448: Note(self.pre_render_notes['blue'], timestamp, self.w*0.57, self.h*0.9, self.notes_group)
                     
                     self.next_note += 1
                 else:

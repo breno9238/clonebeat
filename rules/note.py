@@ -1,8 +1,6 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS_________________________________________________________________
 import pygame                       # Motor de jogo para manipulação de sprites e física
 
-
-
 #________CLASSE DE NOTAS MUSICAIS (SPRITES)_________________________________________________________
 class Note(pygame.sprite.Sprite):
     

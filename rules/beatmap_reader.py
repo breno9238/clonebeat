@@ -84,8 +84,8 @@ class Beatmap:
             self.difficults[diff] = {}
             
             # Define que dentro de self.difficults(1° dict), na dificuldade atual(2° dict),
-            # a chave 'HitObjects' tera como valor um dicionário
-            self.difficults[diff]['HitObjects'] = {}  
+            # a chave 'HitObjects' tera como valor uma lista
+            self.difficults[diff]['HitObjects'] = []
             
             # Abre o arquivo .osu em UTF-8(padrão) para leitura apenas
             with open(diff, 'r', encoding='utf-8') as text_file:
@@ -145,18 +145,19 @@ class Beatmap:
                             timestamp = int(data_points[2])      # Tempo da nota em ms(a partir do inicio da música)
                             pos_x = int(data_points[0])          # Posição X da nota(coluna)
                             
-                            # guarda no dicionário 'HitObjects' a chave(timestamp, o tempo da
-                            # música em que a nota aparece), e o valor(pos_x, posição x em números
+                            # guarda na lista 'HitObjects' uma tupla com o timestamp(tempo da
+                            # música em que a nota aparece), e o pos_x(posição x em números
                             # que representa em qual das 4 colunas a nota está)
-                            self.difficults[diff]['HitObjects'][timestamp] = pos_x
+                            diff_notes: list = self.difficults[diff]['HitObjects']
+                            diff_notes.append((timestamp, pos_x))
 
 
 
 # Teste local pra listar todos os beatmaps atuais no terminal
 if __name__ == '__main__':
     read_test = ReadBeatmaps('beatmaps')
-    lista = read_test.beatmaps.keys()
     print('\nMAPAS:')
-    for i in lista:
-        print(f'''|  {i.name}''')
+    for i in read_test.beatmaps:
+        for a in read_test.beatmaps.values():
+            print(f'''|  {i.name}\n| {a.difficults}''')
     print('')
