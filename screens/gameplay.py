@@ -4,6 +4,7 @@ import json
 from rules.note import Note        # Classe das notas musicais
 from rules.key import Key
 from pathlib import Path
+from rules.beatmap_reader import Beatmap
 
 
 
@@ -12,36 +13,23 @@ class Gameplay:
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_________________________________________________________
-    def __init__(
-        self, 
-        skin: str,
-        audio_file_name: Path,
-        map_title: str,
-        artist: str,
-        creator: str,
-        version: str,
-        overall_difficulty: str,
-        beatmap_id: str,
-        circle_size: str,
-        preview_time: str,
-        hit_objects: dict[int, int]):
+    def __init__(self, skin: str, difficult: dict):
         
         # Inicialização do Pygame e Coleta de Dados do Monitor
         pygame.init()                       # Inicia os módulos internos
-        pygame.mixer.init()
+        pygame.mixer.init()                 # inicia os módulos sonoros
         info = pygame.display.Info()        # Pega as notecs do monitor do usuário
-        
         
         # Configurações de Skin e Grupos de Sprites
         self.skin = skin
         self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
         self.keys_group = pygame.sprite.Group()
-        self.hit_objects = hit_objects
+        self.hit_objects = difficult['HitObjects']
         self.hit_list = sorted(self.hit_objects)
         self.next_note = 0
         
         # Configuração da Música
-        self.audio = audio_file_name
+        self.audio = difficult['AudioFilename']
         pygame.mixer.music.load(self.audio)
         pygame.mixer.music.play()
         
@@ -58,24 +46,31 @@ class Gameplay:
         #___________________________________________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________________________________________________
         
-        self.pad = pygame.image.load(f'skins/{skin}/esteira.png').convert_alpha()
-        
-        # Carrega a imagem e otimiza para transparência (Alpha)
-        self.pre_render_notes = {
-            'blue': pygame.image.load(f'skins/{skin}/blue_note.png').convert_alpha(),
-            'red': pygame.image.load(f'skins/{skin}/red_note.png').convert_alpha()
-        }
-        
-        self.pre_render_notes = {
-            'blue': pygame.transform.scale(self.pre_render_notes['blue'], (100, 100)),
-            'red': pygame.transform.scale(self.pre_render_notes['red'], (100, 100))
-        }
+        def load_tex(widget: str, index=None):
+            try: return pygame.transform.scale(pygame.image.load(f'skins/{skin}/'+str(widget[index]['texture'])).convert_alpha(), (self.w*widget[index]['width'], self.h*widget[index]['height'])) if index else pygame.transform.scale(pygame.image.load(f'skins/{skin}/'+str(widget['texture'])).convert_alpha(), (self.w*widget['width'], self.h*widget['height']))
+            except FileNotFoundError as error:
+                try:
+                    if f'{skin}/0' in str(error): return pygame.transform.scale(pygame.image.load(difficult.get('Background')), (self.w*widget['width'], self.h*widget['height']))
+                except TypeError: print(difficult.get('Background'))
+            
+        with open(f'skins/{skin}/apparence_4k.json', 'r', encoding='utf-8') as apparence:
+            data = json.load(apparence)
+            
+            self.textures = {
+                'background': load_tex(widget=data['background']),
+                'foreground': load_tex(widget=data['foreground']),
+                'note_1': load_tex(widget=data['notes'], index='note_1'),
+                'note_2': load_tex(widget=data['notes'], index='note_2'),
+                'note_3': load_tex(widget=data['notes'], index='note_3'),
+                'note_4': load_tex(widget=data['notes'], index='note_4'),
+                'key_1': load_tex(widget=data['keys'], index='key_1'),
+                'key_2': load_tex(widget=data['keys'], index='key_2'),
+                'key_3': load_tex(widget=data['keys'], index='key_3'),
+                'key_4': load_tex(widget=data['keys'], index='key_4'),
+            }
         
         # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
-        self.masks = {
-            'blue': pygame.mask.from_surface(self.pre_render_notes['blue']),
-            'red': pygame.mask.from_surface(self.pre_render_notes['red'])
-        }
+        self.masks = {(i, pygame.mask.from_surface(self.textures[i])) for i in self.textures.keys()}
         
         self.keys = {
             pygame.K_a:   Key('skins/padrão/key.png', 64, self.h-400, self.keys_group),
@@ -134,7 +129,7 @@ class Gameplay:
             #__RENDERIZAÇÃO DE OBJETOS______________________________________________________________
             
             # 1. Desenho da Esteira
-            self.screen.blit(self.pad, (self.w/2 - (self.pad.get_height()/4), 0))
+            self.screen.blit(self.textures['foreground'], (self.w/2 - (self.textures['foreground'].get_height()/4), 0))
             
             # 3. Processamento e Desenho das Notas
             self.time = pygame.mixer.music.get_pos()
@@ -144,10 +139,10 @@ class Gameplay:
                 
                 if timestamp - self.time < 2000:
                     match pos_x:
-                        case 64:  Note(self.pre_render_notes['blue'], timestamp, self.w*0.35, self.h*0.9, self.notes_group)
-                        case 192: Note(self.pre_render_notes['red'], timestamp, self.w*0.42, self.h*0.9, self.notes_group)
-                        case 320: Note(self.pre_render_notes['red'], timestamp, self.w*0.48, self.h*0.9, self.notes_group)
-                        case 448: Note(self.pre_render_notes['blue'], timestamp, self.w*0.57, self.h*0.9, self.notes_group)
+                        case 64:  Note(self.textures['note_1'], timestamp, self.w*0.35, self.h*0.9, self.notes_group)
+                        case 192: Note(self.textures['note_2'], timestamp, self.w*0.42, self.h*0.9, self.notes_group)
+                        case 320: Note(self.textures['note_3'], timestamp, self.w*0.48, self.h*0.9, self.notes_group)
+                        case 448: Note(self.textures['note_4'], timestamp, self.w*0.57, self.h*0.9, self.notes_group)
                     
                     self.next_note += 1
                 else:
