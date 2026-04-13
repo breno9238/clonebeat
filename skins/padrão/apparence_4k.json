@@ -9,9 +9,9 @@
     
     "foreground":{
         "texture":"esteira.png",
-        "width":0,
-        "height":0,
-        "pos_x":0,
+        "width":0.25,
+        "height":1,
+        "pos_x":0.6,
         "pos_y":0
     },
     
@@ -23,21 +23,21 @@
             "pos_x":0,
             "pos_y":0
         },
-            "key_2": {
+        "key_2": {
             "texture":"key.png",
             "width":0,
             "height":0,
             "pos_x":0,
             "pos_y":0
         },
-                "key_3": {
+        "key_3": {
             "texture":"key.png",
             "width":0,
             "height":0,
             "pos_x":0,
             "pos_y":0
         },
-                "key_4": {
+        "key_4": {
             "texture":"key.png",
             "width":0,
             "height":0,
@@ -48,30 +48,30 @@
     
     "notes":{
         "note_1": {
-            "texture":"key.png",
-            "width":0,
-            "height":0,
+            "texture":"blue_note.png",
+            "width":0.05,
+            "height":0.1,
             "pos_x":0,
             "pos_y":0
         },
-                "note_2": {
-            "texture":"key.png",
-            "width":0,
-            "height":0,
+        "note_2": {
+            "texture":"red_note.png",
+            "width":0.05,
+            "height":0.1,
             "pos_x":0,
             "pos_y":0
         },
-                "note_3": {
-            "texture":"key.png",
-            "width":0,
-            "height":0,
+        "note_3": {
+            "texture":"red_note.png",
+            "width":0.05,
+            "height":0.1,
             "pos_x":0,
             "pos_y":0
         },
-                "note_4": {
-            "texture":"key.png",
-            "width":0,
-            "height":0,
+        "note_4": {
+            "texture":"blue_note.png",
+            "width":0.05,
+            "height":0.1,
             "pos_x":0,
             "pos_y":0
         }

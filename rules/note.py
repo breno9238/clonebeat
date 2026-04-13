@@ -28,7 +28,7 @@ class Note(pygame.sprite.Sprite):
         self.image = png_img
         
         # Define o retângulo de colisão (Hitbox) baseado no tamanho da imagem
-        self.rect: pygame.Rect = png_img.get_rect()
+        self.rect: pygame.Rect = png_img.get_rect(center=(png_img.get_width/2, png_img.get_height/2))
         
         self.rect.x = pos_x
         self.rect.y = 0

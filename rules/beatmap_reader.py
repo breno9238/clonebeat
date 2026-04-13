@@ -68,7 +68,7 @@ class Beatmap:
         self.name: str = beatmap.stem    
         
         # Caminho da imagem do background
-        self.background: Path | None = next(beatmap.glob('*.png'), next(beatmap.glob('*.jpeg'), None))
+        self.background: Path | None = next(beatmap.glob('*.png'), next(beatmap.glob('*.jpeg'), next(beatmap.glob('*.jpg'), None)))
         
         # Cria dicionário de dificuldades {arquivo.osu: None inicialmente}
         self.difficults: dict[Path, dict] = {d: None for d in beatmap.glob('*.osu')}
@@ -82,6 +82,8 @@ class Beatmap:
             # Define cada dificuldade como um dicionário em difficults(dicionário)
             # self.difficults(dict) -> chave: Diff(ex: Hard), valor: dict(onde guarda informações)
             self.difficults[diff] = {}
+            
+            self.difficults[diff]['Background'] = self.background
             
             # Define que dentro de self.difficults(1° dict), na dificuldade atual(2° dict),
             # a chave 'HitObjects' tera como valor uma lista

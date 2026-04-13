@@ -58,29 +58,17 @@ class BeatmapsSelector(ctk.CTkFrame):
         #__________________________________________________________________________________________
         # CRIAÇÃO DOS CARDS DE BEATMAP
         # Itera sobre todos os beatmaps lidos e cria visualmente os cards
-        for map_obj in self.read.beatmaps.values():
-            map: Beatmap = map_obj # Converte para objeto Beatmap
-            card = BeatmapItem(self.scroll_container)  # Cria card principal
+        for beatmap in self.read.beatmaps.values():
+            beatmap: Beatmap = beatmap # Converte para objeto Beatmap
+            card = BeatmapItem(self.scroll_container, beatmap.difficults)  # Cria card principal
             self.cards.append(card)            # Adiciona à lista de cards
             
             # Cria subcards para cada dificuldade do beatmap
-            for difficult in map.difficults:
-                data = map.difficults[difficult]   # Dados da dificuldade
+            for difficult in beatmap.difficults:
+                data = beatmap.difficults[difficult]   # Dados da dificuldade
                 
                 # Cria item visual para a dificuldade
-                secondary_card = DifficultItem(
-                    self.scroll_container,
-                    data['AudioFilename'],     # Arquivo de áudio do beatmap
-                    data['Title'],             # Título do beatmap
-                    data['Artist'],            # Artista da música
-                    data['Creator'],           # Criador do beatmap
-                    data['Version'],           # Versão da dificuldade
-                    data['OverallDifficulty'], # Dificuldade geral
-                    data['BeatmapID'],         # ID do beatmap
-                    data['CircleSize'],        # Tamanho do círculo
-                    data['PreviewTime'],       # Tempo de prévia da música
-                    data['HitObjects']         # Objetos do beatmap (notas)
-                )
+                secondary_card = DifficultItem(self.scroll_container, data)
                 
                 # Adiciona dificuldade ao card principal
                 card.difficults.append(secondary_card)
@@ -106,7 +94,7 @@ class BeatmapItem(ctk.CTkFrame):
     
     #______________________________________________________________________________________________
     # CONSTRUTOR DO ITEM PRINCIPAL
-    def __init__(self, master):
+    def __init__(self, master, difficult):
         """
         Inicializa o card principal do beatmap.
         
@@ -210,31 +198,9 @@ class DifficultItem(ctk.CTkFrame):
     
     #______________________________________________________________________________________________
     # CONSTRUTOR DO ITEM DE DIFICULDADE
-    def __init__(
-        self,
-        master: ctk.CTk,         # Widget pai (normalmente o scroll_container)
-        audio_file: str,          # Arquivo de áudio da música
-        map_title: str,           # Título da música
-        artist: str,              # Artista
-        creator: str,             # Criador do beatmap
-        version: str,             # Versão/dificuldade
-        overall_difficulty: str,  # Dificuldade geral
-        beatmap_id: str,          # ID único do beatmap
-        circle_size: str,         # Tamanho do círculo
-        preview_time: str,        # Tempo de prévia
-        hit_objects: dict[int, int]  # Objetos/notas do beatmap
-    ):
-        # Atributos principais do DifficultItem
-        self.audio_file = audio_file
-        self.map_title = map_title
-        self.artist = artist
-        self.creator = creator
-        self.version = version
-        self.overall_difficulty = overall_difficulty
-        self.beatmap_id = beatmap_id
-        self.circle_size = circle_size
-        self.preview_time = preview_time
-        self.hit_objects = hit_objects
+    def __init__(self, master: ctk.CTk, difficult):
+        
+        self.difficult = difficult
         
         self.selected_diff = True
         
@@ -262,7 +228,7 @@ class DifficultItem(ctk.CTkFrame):
         # Label do título
         self.ui_title = ctk.CTkLabel(
             master=self,
-            text=version,
+            text=self.difficult['Version'],
             font=('Roboto', 18, 'bold'),
             text_color='#FFFFFF'
         )
@@ -272,7 +238,7 @@ class DifficultItem(ctk.CTkFrame):
         # Label do artista
         self.ui_artist = ctk.CTkLabel(
             master=self,
-            text=artist,
+            text=self.difficult['Artist'],
             font=('Roboto', 12, 'italic'),
             text_color='#CCCCCC',
             fg_color='black'
@@ -283,7 +249,7 @@ class DifficultItem(ctk.CTkFrame):
         # Label do artista
         self.ui_creator = ctk.CTkLabel(
             master=self,
-            text=creator,
+            text=self.difficult['Creator'],
             font=('Roboto', 12, 'italic'),
             text_color='#CCCCCC',
             fg_color='black'
@@ -313,19 +279,7 @@ class DifficultItem(ctk.CTkFrame):
                 )
         
         if self.selected_diff:
-            self.game = Gameplay(
-                'padrão',                # Modo padrão
-                self.audio_file,
-                self.map_title,
-                self.artist,
-                self.creator,
-                self.version,
-                self.overall_difficulty,
-                self.beatmap_id,
-                self.circle_size,
-                self.preview_time,
-                self.hit_objects
-            )
+            self.game = Gameplay(self.difficult)
             self.game.start()
 
 
