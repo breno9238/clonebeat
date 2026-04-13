@@ -6,7 +6,7 @@ class Note(pygame.sprite.Sprite):
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR DA NOTA___________________________________________________________________________
-    def __init__(self, png_img: pygame.Surface, timestamp: int, pos_x: int, end: int, group: pygame.sprite.Group):
+    def __init__(self, data: list[pygame.surface.Surface, tuple[int, int], int], timestamp: int, pos_x: int, group: pygame.sprite.Group):
         '''
         Inicializa um objeto de nota musical que desce pela tela.
         
@@ -19,17 +19,16 @@ class Note(pygame.sprite.Sprite):
         # Inicialização da Classe Pai (Sprite)
         super().__init__(group)
         
+        self.image = data[0]
+        self.pos = data[1]
+        self._layer = data[2]
+        
         # Configurações de Movimento
         self.timestamp = timestamp
         self.pos_x = pos_x
-        #___________________________________________________________________________________________
-        #__PROCESSAMENTO VISUAL E COLISÃO___________________________________________________________
-        
-        self.image = png_img
         
         # Define o retângulo de colisão (Hitbox) baseado no tamanho da imagem
-        self.rect: pygame.Rect = png_img.get_rect(center=(png_img.get_width/2, png_img.get_height/2))
-        
+        self.rect: pygame.Rect = self.image.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
         self.rect.x = pos_x
         self.rect.y = 0
     
@@ -40,7 +39,4 @@ class Note(pygame.sprite.Sprite):
         Executa a lógica de movimento a cada ciclo do loop principal.
         Faz a nota descer verticalmente somando a velocidade ao eixo Y.
         '''
-        # self.rect.y = 600 - (self.timestamp - current_time) * speed          # Incrementa a posição Y com base na velocidade
-        # if self.rect.colliderect(hit_line):
-        #     self.kill()
         self.rect.y += speed

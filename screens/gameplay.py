@@ -56,25 +56,38 @@ class Gameplay:
         def load_widget(widget: str, index=None):
             try:
                 if index:
-                    texture = pygame.transform.scale(pygame.image.load(f'skins/{self.skin}/'+str(widget[index]['texture'])).convert_alpha(), (self.w*widget[index]['width'], self.h*widget[index]['height']))
-                    opacity = widget[index]['opacity']
+                    texture = pygame.transform.scale(
+                        pygame.image.load(f'skins/{self.skin}/'+str(widget[index]['texture'])).convert_alpha(),
+                        (self.w*widget[index]['width'], 
+                        self.h*widget[index]['height'])
+                    )
+                    position = (widget[index]['pos_x'], widget[index]['pos_y'])
+                    texture.set_alpha(widget[index]['opacity'])
+                    zindex = widget[index]['zindex']
                 
                 else:
-                    texture = pygame.transform.scale(pygame.image.load(f'skins/{self.skin}/'+str(widget['texture'])).convert_alpha(), (self.w*widget['width'], self.h*widget['height']))
-                    opacity = widget['opacity']
-                    widget = ()
-                
-                centralizer_rect = texture.get_rect(center=(texture.get_width/2, texture.get_height/2))
-                return widget
+                    texture = pygame.transform.scale(
+                        pygame.image.load(f'skins/{self.skin}/'+str(widget['texture'])).convert_alpha(),
+                        (self.w*widget['width'],
+                        self.h*widget['height'])
+                    )
+                    texture.set_alpha(widget['opacity'])
+                    zindex = widget['zindex']
+                    position = (widget['pos_x'], widget['pos_y'])
+                return [texture, position, zindex]
             
             except FileNotFoundError as error:
                 try:
                     if f'{self.skin}/0' in str(error) and widget == 'background': 
-                        return pygame.transform.scale(
+                        texture = pygame.transform.scale(
                             pygame.image.load(self.background),
                             (self.w*widget['width'], 
                              self.h*widget['height'])
                         )
+                        texture.set_alpha(widget['opacity'])
+                        zindex = widget['zindex']
+                        position = (widget['pos_x'], widget['pos_y'])
+                        return [texture, position, zindex]
                 
                 except TypeError: 
                     print(f'\n\n{self.background}\n\n')
@@ -84,7 +97,7 @@ class Gameplay:
                 data = json.load(apparence)
                 return data[data_req]
         
-        self.apparence_4k = {
+        self.widgets = {
             'background': load_widget(widget=extract_apparence('background')),
             'foreground': load_widget(widget=extract_apparence('foreground')),
             'note_1':     load_widget(widget=extract_apparence('notes'), index='note_1'),
@@ -98,7 +111,7 @@ class Gameplay:
         }
         
         # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
-        self.masks = {(i, pygame.mask.from_surface(self.textures[i])) for i in self.textures.keys()}
+        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
         
         self.keys = {
             pygame.K_a:   Key('skins/padrão/key.png', 64, self.h-400, self.keys_group),
@@ -108,6 +121,8 @@ class Gameplay:
         }
         
         self.hit_line = pygame.rect.Rect(0, self.h-100, self.w, 2)
+    
+    
     
     def start(self):
         #___________________________________________________________________________________________
@@ -157,8 +172,10 @@ class Gameplay:
             #__RENDERIZAÇÃO DE OBJETOS______________________________________________________________
             
             # 1. Desenho da Esteira
-            self.screen.blit(self.textures['background'], (self.w, 0))
-            self.screen.blit(self.textures['foreground'], (self.w/2 - (self.textures['foreground'].get_height()/4), 0))
+            try:
+                self.screen.blit(self.widgets['background'][0], self.widgets['background'][1])
+                self.screen.blit(self.widgets['foreground'][0], self.widgets['foreground'][1])
+            except TypeError: print(f'\n\n\n{self.widgets}\n\n\n')
             
             # 3. Processamento e Desenho das Notas
             self.time = pygame.mixer.music.get_pos()
@@ -168,10 +185,10 @@ class Gameplay:
                 
                 if timestamp - self.time < 2000:
                     match pos_x:
-                        case 64:  Note(self.textures['note_1'], timestamp, self.w*0.35, self.h*0.9, self.notes_group)
-                        case 192: Note(self.textures['note_2'], timestamp, self.w*0.42, self.h*0.9, self.notes_group)
-                        case 320: Note(self.textures['note_3'], timestamp, self.w*0.48, self.h*0.9, self.notes_group)
-                        case 448: Note(self.textures['note_4'], timestamp, self.w*0.57, self.h*0.9, self.notes_group)
+                        case 64:  Note(self.widgets['note_1'], timestamp, 64, self.notes_group)
+                        case 192: Note(self.widgets['note_2'], timestamp, 192, self.notes_group)
+                        case 320: Note(self.widgets['note_3'], timestamp, 320, self.notes_group)
+                        case 448: Note(self.widgets['note_4'], timestamp, 448, self.notes_group)
                     
                     self.next_note += 1
                 else:
