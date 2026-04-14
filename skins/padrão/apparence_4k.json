@@ -5,8 +5,8 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "opacity" : 0,
-        "zindex"  : 0
+        "pos_z"   : 0,
+        "opacity" : 0
     }, 
     
     "foreground":{
@@ -15,8 +15,8 @@
         "height"  : 1,
         "pos_x"   : 0.6,
         "pos_y"   : 0,
-        "opacity" : 0,
-        "zindex"  : 0
+        "pos_z"   : 0,
+        "opacity" : 0
     },
     
     "keys":{
@@ -26,8 +26,8 @@
             "height"  : 0,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "key_2": {
             "texture" : "key.png",
@@ -35,8 +35,8 @@
             "height"  : 0,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "key_3": {
             "texture" : "key.png",
@@ -44,8 +44,8 @@
             "height"  : 0,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "key_4": {
             
@@ -54,8 +54,8 @@
             "height"  : 0,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         }
     },
     
@@ -66,8 +66,8 @@
             "height"  : 0.1,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "note_2": {
             "texture" : "red_note.png",
@@ -75,8 +75,8 @@
             "height"  : 0.1,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "note_3": {
             "texture" : "red_note.png",
@@ -84,8 +84,8 @@
             "height"  : 0.1,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "opacity" : 0,
-            "zindex"  : 0
+            "pos_z"   : 0,
+            "opacity" : 0
         },
         "note_4": {
             "texture" : "blue_note.png",
@@ -93,7 +93,7 @@
             "height"  : 0.1,
             "pos_x"   : 0,
             "pos_y"   : 0,
-            "zindex"  : 0,
+            "pos_z"   : 0,
             "opacity" : 0
         }
     },
@@ -104,7 +104,7 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "zindex"  : 0,
+        "pos_z"   : 0,
         "opacity" : 0
     },
     
@@ -114,8 +114,8 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "opacity" : 0,
-        "zindex"  : 0
+        "pos_z"   : 0,
+        "opacity" : 0
     },
     
     "score":{
@@ -124,8 +124,8 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "opacity" : 0,
-        "zindex"  : 0
+        "pos_z"   : 0,
+        "opacity" : 0
     },
     
     "accuracy":{
@@ -134,8 +134,8 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "opacity" : 0,
-        "zindex"  : 0
+        "pos_z"   : 0,
+        "opacity" : 0
     },
     
     "combo":{
@@ -144,7 +144,7 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "zindex"  : 0,
+        "pos_z"   : 0,
         "opacity" : 0
     },
     
@@ -154,7 +154,7 @@
         "height"  : 0,
         "pos_x"   : 0,
         "pos_y"   : 0,
-        "zindex"  : 0,
+        "pos_z"   : 0,
         "opacity" : 0
     }
 }

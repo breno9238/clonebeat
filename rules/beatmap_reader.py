@@ -3,7 +3,6 @@ import zipfile                      # Biblioteca para descompactar arquivos .osz
 from pathlib import Path            # Orientação a objetos para caminhos de arquivos e pastas
 
 
-
 #-________LEITOR GERAL DE DIRETÓRIO (READBEATMAPS)__________________________________________________
 class ReadBeatmaps:
     """
@@ -121,15 +120,15 @@ class Beatmap:
                         # Guarda o valor de cada campo/chave util em uma variavel
                         # Title: Apollo -> self.title = 'Apollo'
                         match key_name:
-                            case 'AudioFilename':     diff_data['AudioFilename'] = Path(beatmap, value_content)
-                            case 'Title':             diff_data['Title'] = value_content
-                            case 'Artist':            diff_data['Artist'] = value_content
-                            case 'Creator':           diff_data['Creator'] = value_content
-                            case 'Version':           diff_data['Version'] = value_content
-                            case 'OverallDifficulty': diff_data['OverallDifficulty'] = value_content
-                            case 'BeatmapID':         diff_data['BeatmapID'] = value_content
-                            case 'CircleSize':        diff_data['CircleSize'] = value_content
-                            case 'PreviewTime':       diff_data['PreviewTime'] = value_content
+                            case 'AudioFilename'     : diff_data['AudioFilename'] = Path(beatmap, value_content)
+                            case 'Title'             : diff_data['Title'] = value_content
+                            case 'Artist'            : diff_data['Artist'] = value_content
+                            case 'Creator'           : diff_data['Creator'] = value_content
+                            case 'Version'           : diff_data['Version'] = value_content
+                            case 'OverallDifficulty' : diff_data['OverallDifficulty'] = value_content
+                            case 'BeatmapID'         : diff_data['BeatmapID'] = value_content
+                            case 'CircleSize'        : diff_data['CircleSize'] = value_content
+                            case 'PreviewTime'       : diff_data['PreviewTime'] = value_content
                     
                     # Se encontrar [HitObjects] na linha, quer dizer que cada uma das proximas
                     # linhas representarão notas e irão guardar suas informações

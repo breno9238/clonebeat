@@ -1,17 +1,13 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
 import json
-from rules.note import Note        # Classe das notas musicais
-from rules.key import Key
-from pathlib import Path
-from rules.beatmap_reader import Beatmap
+from rules import Key, Note, Background, Foreground, Score, Combo, Accuracy
 
 
-
+#_______________________________________________________________________________________________
 #________MÓDULO DE EXECUÇÃO DO JOGO_________________________________________________________________
 class Gameplay:
     
-    #_______________________________________________________________________________________________
     #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_________________________________________________________
     def __init__(self, difficult: dict):
         
@@ -23,25 +19,25 @@ class Gameplay:
         # Configurações do Jogo
         with open('settings.json', 'r', encoding='utf-8') as settings:
             setting = json.load(settings)
-            self.skin = setting['skin']
+            self.skin = f'skins/{setting['skin']}/apparence_4k.json'
         
         self.background = difficult['Background']
         
-        # Grupos de Sprites
-        self.notes_group = pygame.sprite.Group() # Grupo que gerencia todas as notas ativas
-        self.keys_group = pygame.sprite.Group()
+        # GRUPOS DE SPRITES
+        self.notes_group = pygame.sprite.LayeredUpdates # Grupo que gerencia todas as notas ativas
+        self.keys_group  = pygame.sprite.LayeredUpdates
         self.hit_objects = difficult['HitObjects']
-        self.hit_list = sorted(self.hit_objects)
-        self.next_note = 0
+        self.hit_list    = sorted(self.hit_objects)
+        self.next_note   = 0
         
-        # Configuração da Música
+        # CONFIGURAÇÃO DA MÚSICA
         self.audio = difficult['AudioFilename']
         pygame.mixer.music.load(self.audio)
         pygame.mixer.music.set_volume(0.05)
         pygame.mixer.music.play()
         
-        #___________________________________________________________________________________________
-        #__CONFIGURAÇÕES DE TELA____________________________________________________________________
+        
+        # CONFIGURAÇÕES DE TELA
         self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
         self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
         self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
@@ -49,8 +45,6 @@ class Gameplay:
         self.run    = True                                         # Controle do Loop
         
         
-        
-        #___________________________________________________________________________________________
         #__CARREGAMENTO DE SKIN_____________________________________________________________________
         
         def load_widget(widget: str, index=None):
@@ -58,23 +52,21 @@ class Gameplay:
                 if index:
                     texture = pygame.transform.scale(
                         pygame.image.load(f'skins/{self.skin}/'+str(widget[index]['texture'])).convert_alpha(),
-                        (self.w*widget[index]['width'], 
-                        self.h*widget[index]['height'])
+                        (self.w*widget[index]['width'], self.h*widget[index]['height'])
                     )
                     position = (widget[index]['pos_x'], widget[index]['pos_y'])
                     texture.set_alpha(widget[index]['opacity'])
-                    zindex = widget[index]['zindex']
+                    pos_z   =  widget[index]['pos_z']
                 
                 else:
                     texture = pygame.transform.scale(
                         pygame.image.load(f'skins/{self.skin}/'+str(widget['texture'])).convert_alpha(),
-                        (self.w*widget['width'],
-                        self.h*widget['height'])
+                        (self.w*widget['width'], self.h*widget['height'])
                     )
                     texture.set_alpha(widget['opacity'])
-                    zindex = widget['zindex']
                     position = (widget['pos_x'], widget['pos_y'])
-                return [texture, position, zindex]
+                    pos_z   =  widget['pos_z']
+                return [texture, position, pos_z]
             
             except FileNotFoundError as error:
                 try:
@@ -85,9 +77,9 @@ class Gameplay:
                              self.h*widget['height'])
                         )
                         texture.set_alpha(widget['opacity'])
-                        zindex = widget['zindex']
+                        pos_z = widget['pos_z']
                         position = (widget['pos_x'], widget['pos_y'])
-                        return [texture, position, zindex]
+                        return [texture, position, pos_z]
                 
                 except TypeError: 
                     print(f'\n\n{self.background}\n\n')
@@ -98,29 +90,23 @@ class Gameplay:
                 return data[data_req]
         
         self.widgets = {
-            'background': load_widget(widget=extract_apparence('background')),
-            'foreground': load_widget(widget=extract_apparence('foreground')),
-            'note_1':     load_widget(widget=extract_apparence('notes'), index='note_1'),
-            'note_2':     load_widget(widget=extract_apparence('notes'), index='note_2'),
-            'note_3':     load_widget(widget=extract_apparence('notes'), index='note_3'),
-            'note_4':     load_widget(widget=extract_apparence('notes'), index='note_4'),
-            'key_1':      load_widget(widget=extract_apparence('keys'),  index='key_1'),
-            'key_2':      load_widget(widget=extract_apparence('keys'),  index='key_2'),
-            'key_3':      load_widget(widget=extract_apparence('keys'),  index='key_3'),
-            'key_4':      load_widget(widget=extract_apparence('keys'),  index='key_4')
+            'background' : Background(self.skin),
+            'foreground' : Foreground(load_widget(widget=extract_apparence('foreground'))),
+            'score'      :      Score(load_widget(widget=extract_apparence('score'))),
+            'combo'      :      Combo(load_widget(widget=extract_apparence('combo'))),
+            'accuracy'   :   Accuracy(load_widget(widget=extract_apparence('accuracy'))),
+            'key_1'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_1')),
+            'key_2'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_2')),
+            'key_3'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_3')),
+            'key_4'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_4')),
+            'note_1'     :            load_widget(widget=extract_apparence('notes'), index='note_1'),
+            'note_2'     :            load_widget(widget=extract_apparence('notes'), index='note_2'),
+            'note_3'     :            load_widget(widget=extract_apparence('notes'), index='note_3'),
+            'note_4'     :            load_widget(widget=extract_apparence('notes'), index='note_4')
         }
         
         # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
         self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
-        
-        self.keys = {
-            pygame.K_a:   Key('skins/padrão/key.png', 64, self.h-400, self.keys_group),
-            pygame.K_s:   Key('skins/padrão/key.png', 192, self.h-400, self.keys_group),
-            pygame.K_KP4: Key('skins/padrão/key.png', 320, self.h-400, self.keys_group),
-            pygame.K_KP5: Key('skins/padrão/key.png', 448, self.h-400, self.keys_group)
-        }
-        
-        self.hit_line = pygame.rect.Rect(0, self.h-100, self.w, 2)
     
     
     
@@ -185,16 +171,17 @@ class Gameplay:
                 
                 if timestamp - self.time < 2000:
                     match pos_x:
-                        case 64:  Note(self.widgets['note_1'], timestamp, 64, self.notes_group)
-                        case 192: Note(self.widgets['note_2'], timestamp, 192, self.notes_group)
-                        case 320: Note(self.widgets['note_3'], timestamp, 320, self.notes_group)
-                        case 448: Note(self.widgets['note_4'], timestamp, 448, self.notes_group)
+                        case 64:  Note(self.widgets['note_1'], timestamp,  self.notes_group)
+                        case 192: Note(self.widgets['note_2'], timestamp,  self.notes_group)
+                        case 320: Note(self.widgets['note_3'], timestamp,  self.notes_group)
+                        case 448: Note(self.widgets['note_4'], timestamp,  self.notes_group)
                     
                     self.next_note += 1
+                
                 else:
                     break
             
-            self.notes_group.draw(self.screen)
+            self.notes_group.draw(self.screen,)
             self.notes_group.update(self.time, 20) # Atualiza a posição de todas as notas
             # 4. Notas Longas (Slider/Hold)
             
