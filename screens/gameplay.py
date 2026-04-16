@@ -1,29 +1,66 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
 import pygame                       # Motor gráfico para o jogo
 import json
-from rules import Key, Note, Background, Foreground, Score, Combo, Accuracy
+from functools import partial
+from rules.game_widgets import Key, Note, Background, Foreground, Score, Combo, Accuracy
+from rules.readers import SettingsReader
 
 
 #_______________________________________________________________________________________________
 #________MÓDULO DE EXECUÇÃO DO JOGO_________________________________________________________________
 class Gameplay:
+    '''
+    Classe que inicia e executa a gameplay
+    '''
     
-    #__CONSTRUTOR E INICIALIZAÇÃO DO PYGAME_________________________________________________________
     def __init__(self, difficult: dict):
+        '''
+        Inicializador da gameplay
+        '''
         
-        # Inicialização do Pygame e Coleta de Dados do Monitor
-        pygame.init()                       # Inicia os módulos internos
-        pygame.mixer.init()                 # inicia os módulos sonoros
-        info = pygame.display.Info()        # Pega as notecs do monitor do usuário
+        # Inicialização do módulo do Pygame
+        pygame.init()
         
-        # Configurações do Jogo
-        with open('settings.json', 'r', encoding='utf-8') as settings:
-            setting = json.load(settings)
-            self.skin = f'skins/{setting['skin']}/apparence_4k.json'
+        # Inicia os módulos sonoros
+        pygame.mixer.init()
         
+        # Pega as dimensões do monitor do 
+        info = pygame.display.Info() 
+        
+        # Obtém as configurações do jogo
+        self.settings = SettingsReader()
+        self.skin = 
+        
+        # Configurações da Tela
+        self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
+        self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
+        self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
+        self.clock  = pygame.time.Clock()                          # Controlador de FPS
+        self.run    = True                                         # Controle do Loop
+        
+        # Carregamento da Skin
         self.background = difficult['Background']
+        self.widgets = {
+            'background' :   Background(skin_path=self.skin, layer_group=1),
+            'foreground' :   Foreground(skin_path=self.skin, layer_group=1),
+            'score'      :        Score(skin_path=self.skin, layer_group=1),
+            'combo'      :        Combo(skin_path=self.skin, layer_group=1),
+            'accuracy'   :     Accuracy(skin_path=self.skin, layer_group=1),
+            'key_1'      :          Key(skin_path=self.skin, layer_group=1),
+            'key_2'      :          Key(skin_path=self.skin, layer_group=1),
+            'key_3'      :          Key(skin_path=self.skin, layer_group=1),
+            'key_4'      :          Key(skin_path=self.skin, layer_group=1),
+            'note_1'     : partial(Note(skin_path=self.skin, layer_group=1)),
+            'note_2'     : partial(Note(skin_path=self.skin, layer_group=1)),
+            'note_3'     : partial(Note(skin_path=self.skin, layer_group=1)),
+            'note_4'     : partial(Note(skin_path=self.skin, layer_group=1))
+        }
         
-        # GRUPOS DE SPRITES
+        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
+        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
+    
+        
+        # Carregamento do Beatmap
         self.notes_group = pygame.sprite.LayeredUpdates # Grupo que gerencia todas as notas ativas
         self.keys_group  = pygame.sprite.LayeredUpdates
         self.hit_objects = difficult['HitObjects']
@@ -35,79 +72,6 @@ class Gameplay:
         pygame.mixer.music.load(self.audio)
         pygame.mixer.music.set_volume(0.05)
         pygame.mixer.music.play()
-        
-        
-        # CONFIGURAÇÕES DE TELA
-        self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
-        self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
-        self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
-        self.clock  = pygame.time.Clock()                          # Controlador de FPS
-        self.run    = True                                         # Controle do Loop
-        
-        
-        #__CARREGAMENTO DE SKIN_____________________________________________________________________
-        
-        def load_widget(widget: str, index=None):
-            try:
-                if index:
-                    texture = pygame.transform.scale(
-                        pygame.image.load(f'skins/{self.skin}/'+str(widget[index]['texture'])).convert_alpha(),
-                        (self.w*widget[index]['width'], self.h*widget[index]['height'])
-                    )
-                    position = (widget[index]['pos_x'], widget[index]['pos_y'])
-                    texture.set_alpha(widget[index]['opacity'])
-                    pos_z   =  widget[index]['pos_z']
-                
-                else:
-                    texture = pygame.transform.scale(
-                        pygame.image.load(f'skins/{self.skin}/'+str(widget['texture'])).convert_alpha(),
-                        (self.w*widget['width'], self.h*widget['height'])
-                    )
-                    texture.set_alpha(widget['opacity'])
-                    position = (widget['pos_x'], widget['pos_y'])
-                    pos_z   =  widget['pos_z']
-                return [texture, position, pos_z]
-            
-            except FileNotFoundError as error:
-                try:
-                    if f'{self.skin}/0' in str(error) and widget == 'background': 
-                        texture = pygame.transform.scale(
-                            pygame.image.load(self.background),
-                            (self.w*widget['width'], 
-                             self.h*widget['height'])
-                        )
-                        texture.set_alpha(widget['opacity'])
-                        pos_z = widget['pos_z']
-                        position = (widget['pos_x'], widget['pos_y'])
-                        return [texture, position, pos_z]
-                
-                except TypeError: 
-                    print(f'\n\n{self.background}\n\n')
-        
-        def extract_apparence(data_req):
-            with open(f'skins/{self.skin}/apparence_4k.json', 'r', encoding='utf-8') as apparence:
-                data = json.load(apparence)
-                return data[data_req]
-        
-        self.widgets = {
-            'background' : Background(self.skin),
-            'foreground' : Foreground(load_widget(widget=extract_apparence('foreground'))),
-            'score'      :      Score(load_widget(widget=extract_apparence('score'))),
-            'combo'      :      Combo(load_widget(widget=extract_apparence('combo'))),
-            'accuracy'   :   Accuracy(load_widget(widget=extract_apparence('accuracy'))),
-            'key_1'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_1')),
-            'key_2'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_2')),
-            'key_3'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_3')),
-            'key_4'      :        Key(load_widget(widget=extract_apparence('keys'),  index='key_4')),
-            'note_1'     :            load_widget(widget=extract_apparence('notes'), index='note_1'),
-            'note_2'     :            load_widget(widget=extract_apparence('notes'), index='note_2'),
-            'note_3'     :            load_widget(widget=extract_apparence('notes'), index='note_3'),
-            'note_4'     :            load_widget(widget=extract_apparence('notes'), index='note_4')
-        }
-        
-        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
-        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
-    
     
     
     def start(self):

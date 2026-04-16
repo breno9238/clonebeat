@@ -5,6 +5,9 @@ from pathlib import Path
 class Background(pygame.sprite.Sprite):
     
     def __init__(self, skin_path: str, layer_group: pygame.sprite.LayeredUpdates):
+        '''
+        Inicializa um objeto do fundo decorativo.
+        '''
         
         # Leitura do apparence_4k.json pra extração das definições e configurações da skin
         with open(f'{skin_path}/apparence.json', 'r', encoding='utf-8') as apparence_4k:
@@ -13,7 +16,7 @@ class Background(pygame.sprite.Sprite):
             self.ui = json.load(apparence_4k)
         
         # Carregamento da imagem
-        self.image = pygame.image.load(self.ui['image']).convert_alpha()
+        self.image = pygame.image.load(self.ui['texture']).convert_alpha()
         
         # Tamanho da imagem
         self.image = pygame.transform.scale(self.image, (self.ui['width'], self.ui['height']))

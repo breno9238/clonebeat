@@ -18,6 +18,47 @@
         "pos_z"   : 0,
         "opacity" : 0
     },
+        
+    
+    "score":{
+        "texture" : "esteira.png",
+        "width"   : 0,
+        "height"  : 0,
+        "pos_x"   : 0,
+        "pos_y"   : 0,
+        "pos_z"   : 0,
+        "opacity" : 0
+    },
+    
+    "accuracy":{
+        "texture" : "esteira.png",
+        "width"   : 0,
+        "height"  : 0,
+        "pos_x"   : 0,
+        "pos_y"   : 0,
+        "pos_z"   : 0,
+        "opacity" : 0
+    },
+    
+    "combo":{
+        "texture" : "esteira.png",
+        "width"   : 0,
+        "height"  : 0,
+        "pos_x"   : 0,
+        "pos_y"   : 0,
+        "pos_z"   : 0,
+        "opacity" : 0
+    },
+    
+    "judgment":{
+        "texture" : "esteira.png",
+        "width"   : 0,
+        "height"  : 0,
+        "pos_x"   : 0,
+        "pos_y"   : 0,
+        "pos_z"   : 0,
+        "opacity" : 0
+    },
     
     "keys":{
         "key_1": {
@@ -96,8 +137,8 @@
             "pos_z"   : 0,
             "opacity" : 0
         }
-    },
     
+    },
     "long_notes":{
         "texture" : "esteira.png",
         "width"   : 0,
@@ -109,46 +150,6 @@
     },
     
     "hitpress":{
-        "texture" : "esteira.png",
-        "width"   : 0,
-        "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "pos_z"   : 0,
-        "opacity" : 0
-    },
-    
-    "score":{
-        "texture" : "esteira.png",
-        "width"   : 0,
-        "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "pos_z"   : 0,
-        "opacity" : 0
-    },
-    
-    "accuracy":{
-        "texture" : "esteira.png",
-        "width"   : 0,
-        "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "pos_z"   : 0,
-        "opacity" : 0
-    },
-    
-    "combo":{
-        "texture" : "esteira.png",
-        "width"   : 0,
-        "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "pos_z"   : 0,
-        "opacity" : 0
-    },
-    
-    "judgment":{
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,

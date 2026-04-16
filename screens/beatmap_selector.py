@@ -2,7 +2,7 @@
 # IMPORTAÇÃO DE DEPENDÊNCIAS
 from pathlib import Path                    # Manipulação de arquivos e diretórios
 from screens.gameplay import Gameplay      # Tela de jogabilidade do beatmap
-from rules.beatmap_reader import Beatmap, ReadBeatmaps  # Leitura e representação de beatmaps
+from rules.readers.beatmaps_reader import Beatmap, ReadBeatmaps  # Leitura e representação de beatmaps
 import customtkinter as ctk                # Interface gráfica moderna
 import os                                   # Utilidades do sistema
 import random                               # Funções aleatórias (não usado diretamente aqui)
