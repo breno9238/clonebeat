@@ -24,16 +24,6 @@ class Config(ctk.CTkFrame):
             border_width=0,                # Sem contorno de borda
             border_color='gray'            # Cor da borda (inativa se width=0)
             )
-    
-    
-    
-    #_______________________________________________________________________________________________
-    #__RENDERIZAÇÃO DA TELA NA JANELA_______________________________________________________________
-    def render(self):
-        '''
-        Gerencia o posicionamento e a visibilidade da tela no layout.
-        Utiliza coordenadas relativas para manter a responsividade.
-        '''
         
         # Posicionamento Dinâmico (Layout Total)
         self.place(

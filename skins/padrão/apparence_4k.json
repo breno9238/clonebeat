@@ -3,9 +3,9 @@
         "texture" : 0,
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "opacity" : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
+        "opacity" : 100,
         "zindex"  : 0
     }, 
     
@@ -13,9 +13,9 @@
         "texture" : "esteira.png",
         "width"   : 0.25,
         "height"  : 1,
-        "pos_x"   : 0.6,
-        "pos_y"   : 0,
-        "opacity" : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
+        "opacity" : 100,
         "zindex"  : 0
     },
     
@@ -24,27 +24,27 @@
             "texture" : "key.png",
             "width"   : 0,
             "height"  : 0,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "key_2": {
             "texture" : "key.png",
             "width"   : 0,
             "height"  : 0,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "key_3": {
             "texture" : "key.png",
             "width"   : 0,
             "height"  : 0,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "key_4": {
@@ -52,9 +52,9 @@
             "texture" : "key.png",
             "width"   : 0,
             "height"  : 0,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         }
     },
@@ -64,35 +64,35 @@
             "texture" : "blue_note.png",
             "width"   : 0.05,
             "height"  : 0.1,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "note_2": {
             "texture" : "red_note.png",
             "width"   : 0.05,
             "height"  : 0.1,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "note_3": {
             "texture" : "red_note.png",
             "width"   : 0.05,
             "height"  : 0.1,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
-            "opacity" : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
+            "opacity" : 100,
             "zindex"  : 0
         },
         "note_4": {
             "texture" : "blue_note.png",
             "width"   : 0.05,
             "height"  : 0.1,
-            "pos_x"   : 0,
-            "pos_y"   : 0,
+            "pos_x"   : 0.5,
+            "pos_y"   : 1,
             "zindex"  : 0,
             "opacity" : 0
         }
@@ -102,8 +102,8 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
         "zindex"  : 0,
         "opacity" : 0
     },
@@ -112,9 +112,9 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "opacity" : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
+        "opacity" : 100,
         "zindex"  : 0
     },
     
@@ -122,9 +122,9 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "opacity" : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
+        "opacity" : 100,
         "zindex"  : 0
     },
     
@@ -132,9 +132,9 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
-        "opacity" : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
+        "opacity" : 100,
         "zindex"  : 0
     },
     
@@ -142,8 +142,8 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
         "zindex"  : 0,
         "opacity" : 0
     },
@@ -152,8 +152,8 @@
         "texture" : "esteira.png",
         "width"   : 0,
         "height"  : 0,
-        "pos_x"   : 0,
-        "pos_y"   : 0,
+        "pos_x"   : 0.5,
+        "pos_y"   : 1,
         "zindex"  : 0,
         "opacity" : 0
     }

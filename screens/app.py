@@ -131,3 +131,4 @@ class App(ctk.CTk):
     def show_config(self):
         '''Instancia o Frame de Configurações sobrepondo o menu principal.'''
         self.config: Config = Config(self)
+

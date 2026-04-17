@@ -82,7 +82,7 @@ class Gameplay:
                         texture = pygame.transform.scale(
                             pygame.image.load(self.background),
                             (self.w*widget['width'], 
-                             self.h*widget['height'])
+                            self.h*widget['height'])
                         )
                         texture.set_alpha(widget['opacity'])
                         zindex = widget['zindex']
