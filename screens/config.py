@@ -8,7 +8,7 @@ class Config(ctk.CTkFrame):
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR E CONFIGURAÇÃO DO FRAME___________________________________________________________
-    def __init__(self, par_master: any):
+    def __init__(self, master):
         '''
         Inicializa o container principal da tela de configurações.
         par_master: A janela ou frame principal (App) que conterá esta tela.
@@ -16,7 +16,7 @@ class Config(ctk.CTkFrame):
         
         # Inicialização do Widget CTkFrame
         super().__init__(
-            master=par_master,             # Define o elemento pai
+            master=master,             # Define o elemento pai
             width=200,                     # Largura base (ajustada no render)
             height=200,                    # Altura base (ajustada no render)
             corner_radius=10,              # Cantos arredondados suavizados
@@ -34,7 +34,7 @@ class Config(ctk.CTkFrame):
         )
         
         self.skins_buttom = ctk.CTkButton(
-            master=par_master ,
+            master=self,
             text="SKINS",
             width=200,
             height=40,
@@ -55,7 +55,7 @@ class Config(ctk.CTkFrame):
         )
         
         self.voltar_buttom = ctk.CTkButton(
-            master=par_master,
+            master=self,
             text="VOLTAR",
             width=200,
             height=40,
@@ -80,11 +80,13 @@ class Config(ctk.CTkFrame):
     
     
     def show_skin_selector(self):
-        self.skin_selector : SkinSelector = SkinSelector(self)
         
+        self.skin_selector : SkinSelector = SkinSelector(self)
+        self.skin_selector.lift()
     
     def voltar_menu(self):
         self.skins_buttom.destroy()
         self.voltar_buttom.destroy()
         self.destroy()
 
+    

@@ -8,14 +8,24 @@
 from pathlib import Path
 import json
 import zipfile
+
+
+
 class SkinReader:
+
     def __init__(self):
         
         pasta_skins = Path("skins")
         
+        self.skins_list = []
         
         for skin in pasta_skins.iterdir():
-            if skin.is_dir():
+        
+            if "skin.ini" in skin.iterdir():#----------comando provisório para testes------------
+                print(f"uma skin não tem as pastas necessarias para funcionar{skin.name}")
+                continue
+            
+            elif "preview.json" in skin.iterdir():
                 with open(skin/"preview.json", "r", encoding="utf-8") as raw_preview:
                     
                     self.preview = json.load(raw_preview)
@@ -28,11 +38,18 @@ class SkinReader:
                 with zipfile.ZipFile(skin, "r") as zip_osk:
                     zip_osk.extractall(skin_extraida)
                 skin.unlink()
+                
+                if "skin.ini" in skin.iterdir():#----------comando provisório para testes------------
+                    print(f"uma skin não tem as pastas necessarias para funcionar{skin.name}")
+                    continue
+            
             
             elif skin.suffix == ".msz":
                 pass
+            
+            self.skins_list.append(skin)
 
-dicionario = SkinReader()
+
 
 
 
