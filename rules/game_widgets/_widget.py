@@ -1,28 +1,20 @@
-from .key import Key
-from .note import Note
-from .background import Background
-from .foreground import Foreground
-from .score import Score
-from .combo import Combo
-from .accuracy import Accuracy
-
 import json
 import pygame
 from pathlib import Path
 
 class Widget(pygame.sprite.Sprite):
     
-    def __init__(self, skin_path: str, sprite_group: pygame.sprite.Group):
+    def __init__(self, skin_path: str, sprite_group: pygame.sprite.Group, raw_widget):
         '''
         Inicializa um objeto do fundo decorativo.
         '''
         
         # Leitura do apparence_4k.json pra extração das definições e configurações da skin
-        with open(f'{skin_path}/apparence.json', 'r', encoding='utf-8') as apparence_4k:
+        with open(f'assets/skins/{skin_path}/apparence.json', 'r', encoding='utf-8') as apparence_4k:
             
             # Transformação texto json -> dicionário do python
             ui = json.load(apparence_4k)
-            self.background = ui['background']
+            self.widget = ui[raw_widget]
         
         # Carregamento da imagem
         self.image = pygame.image.load(self.background['texture']).convert_alpha()

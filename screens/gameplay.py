@@ -3,7 +3,7 @@ import pygame                       # Motor gráfico para o jogo
 import json
 from functools import partial
 from rules.game_widgets import Key, Note, Background, Foreground, Score, Combo, Accuracy
-from rules.readers import SettingsReader
+from rules.readers import read_settings
 
 
 #_______________________________________________________________________________________________
@@ -27,10 +27,6 @@ class Gameplay:
         # Pega as dimensões do monitor do 
         info = pygame.display.Info() 
         
-        # Obtém as configurações do jogo
-        self.settings = SettingsReader()
-        self.skin = 
-        
         # Configurações da Tela
         self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
         self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
@@ -38,34 +34,43 @@ class Gameplay:
         self.clock  = pygame.time.Clock()                          # Controlador de FPS
         self.run    = True                                         # Controle do Loop
         
-        # Carregamento da Skin
-        self.background = difficult['Background']
-        self.widgets = {
-            'background' :   Background(skin_path=self.skin, layer_group=1),
-            'foreground' :   Foreground(skin_path=self.skin, layer_group=1),
-            'score'      :        Score(skin_path=self.skin, layer_group=1),
-            'combo'      :        Combo(skin_path=self.skin, layer_group=1),
-            'accuracy'   :     Accuracy(skin_path=self.skin, layer_group=1),
-            'key_1'      :          Key(skin_path=self.skin, layer_group=1),
-            'key_2'      :          Key(skin_path=self.skin, layer_group=1),
-            'key_3'      :          Key(skin_path=self.skin, layer_group=1),
-            'key_4'      :          Key(skin_path=self.skin, layer_group=1),
-            'note_1'     : partial(Note(skin_path=self.skin, layer_group=1)),
-            'note_2'     : partial(Note(skin_path=self.skin, layer_group=1)),
-            'note_3'     : partial(Note(skin_path=self.skin, layer_group=1)),
-            'note_4'     : partial(Note(skin_path=self.skin, layer_group=1))
-        }
-        
-        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
-        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
-    
+        # Configurações do jogo
+        self.layer_group = pygame.sprite.LayeredUpdates
+        self.settings    = read_settings()
+        self.skin        = self.settings['skin']
+        self.speed       = self.settings['speed']
         
         # Carregamento do Beatmap
-        self.notes_group = pygame.sprite.LayeredUpdates # Grupo que gerencia todas as notas ativas
-        self.keys_group  = pygame.sprite.LayeredUpdates
+        self.notes_group = pygame.sprite.Group # Grupo que gerencia todas as notas ativas
+        self.keys_group  = pygame.sprite.Group # Grupo que gerencia
         self.hit_objects = difficult['HitObjects']
         self.hit_list    = sorted(self.hit_objects)
         self.next_note   = 0
+        
+        # Carregamento da Skin
+        self.background = difficult['Background']
+        self.widgets = {
+            'background' :   Background(skin_path=self.skin, layer_group=self.layer_group),
+            'foreground' :   Foreground(skin_path=self.skin, layer_group=self.layer_group),
+            'score'      :        Score(skin_path=self.skin, layer_group=self.layer_group),
+            'combo'      :        Combo(skin_path=self.skin, layer_group=self.layer_group),
+            'accuracy'   :     Accuracy(skin_path=self.skin, layer_group=self.layer_group),
+            'key_1'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
+            'key_2'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
+            'key_3'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
+            'key_4'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
+            'note_1'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group)),
+            'note_2'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group)),
+            'note_3'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group1)),
+            'note_4'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group))
+        }
+        
+        for widget in self.widgets.items():
+            self.layer_group.add(widget)
+        
+        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
+        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
+        
         
         # CONFIGURAÇÃO DA MÚSICA
         self.audio = difficult['AudioFilename']

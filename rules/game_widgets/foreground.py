@@ -1,3 +1,13 @@
-class Foreground:
-    def __init__(self, image):
-        pass
+import json
+import pygame
+from pathlib import Path
+from game_widgets._widget import Widget
+
+class Foreground(Widget):
+    
+    def __init__(self, skin_path: str, layer_group: pygame.sprite.LayeredUpdates):
+        '''
+        Inicializa um objeto do fundo decorativo.
+        '''
+        super().__init__()
+        

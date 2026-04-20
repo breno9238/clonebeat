@@ -1,14 +1,16 @@
 import json
+from pathlib import Path
 
 def read_settings():
     
-    def __init__(self):
+    with open('settings.json', 'r', encoding='utf-8') as settings_json:
         
-        with open('settings.json', 'r', encoding='utf-8') as settings:
-            
-            # extrai o json para um dicionário python
-            self.setting = json.load(settings)
-        
-        # guarda cada valor de cada definição do jogador
-        self.skin : str = f'skins/{self.setting['skin']}/apparence_4k.json'
-        self.speed: int = self.setting['speed']
+        # extrai o json para um dicionário python
+        settings = json.load(settings_json)
+    
+    for setting in settings.keys():
+        if setting == 'skin': settings[setting] = Path(fr'assets/skins/{settings[setting]}').resolve()
+    
+    return settings
+
+print(read_settings())
