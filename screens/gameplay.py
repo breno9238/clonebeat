@@ -1,138 +1,98 @@
-#________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________-
-import pygame                       # Motor gráfico para o jogo
-import json
+# ________IMPORTAÇÃO DE DEPENDÊNCIAS________________________________________________________________- 
+import pygame
+import yaml
 from functools import partial
 from rules.game_widgets import Key, Note, Background, Foreground, Score, Combo, Accuracy
 from rules.readers import read_settings
 
-
-#_______________________________________________________________________________________________
-#________MÓDULO DE EXECUÇÃO DO JOGO_________________________________________________________________
+# ________MÓDULO DE EXECUÇÃO DO JOGO_________________________________________________________________ 
 class Gameplay:
-    '''
-    Classe que inicia e executa a gameplay
-    '''
+    ''' Classe que inicia e executa a gameplay '''
     
     def __init__(self, difficult: dict):
-        '''
-        Inicializador da gameplay
-        '''
+        ''' Inicializador da gameplay '''
         
-        # Inicialização do módulo do Pygame
+        # --- Inicialização do Sistema ---
         pygame.init()
-        
-        # Inicia os módulos sonoros
         pygame.mixer.init()
         
-        # Pega as dimensões do monitor do 
-        info = pygame.display.Info() 
+        # --- Configurações de Janela ---
+        info = pygame.display.Info()
+        self.w = info.current_w - 100
+        self.h = info.current_h - 100
+        self.screen = pygame.display.set_mode((self.w, self.h))
+        self.clock = pygame.time.Clock()
+        self.run = True
         
-        # Configurações da Tela
-        self.w      = info.current_w - 100                         # Largura (Monitor - 100px)
-        self.h      = info.current_h - 100                         # Altura (Monitor - 100px)
-        self.screen = pygame.display.set_mode((self.w, self.h))    # Define a janela
-        self.clock  = pygame.time.Clock()                          # Controlador de FPS
-        self.run    = True                                         # Controle do Loop
-        
-        # Configurações do jogo
+        # --- Configurações de Jogo e Usuário ---
         self.layer_group = pygame.sprite.LayeredUpdates
-        self.settings    = read_settings()
-        self.skin        = self.settings['skin']
-        self.speed       = self.settings['speed']
+        self.settings = read_settings()
+        self.skin = self.settings['skin']
+        self.speed = self.settings['speed']
         
-        # Carregamento do Beatmap
-        self.notes_group = pygame.sprite.Group # Grupo que gerencia todas as notas ativas
-        self.keys_group  = pygame.sprite.Group # Grupo que gerencia
+        # --- Gerenciamento de Sprites e Beatmap ---
+        self.notes_group = pygame.sprite.Group()
+        self.keys_group = pygame.sprite.Group()
         self.hit_objects = difficult['HitObjects']
-        self.hit_list    = sorted(self.hit_objects)
-        self.next_note   = 0
-        
-        # Carregamento da Skin
         self.background = difficult['Background']
-        self.widgets = {
-            'background' :   Background(skin_path=self.skin, layer_group=self.layer_group),
-            'foreground' :   Foreground(skin_path=self.skin, layer_group=self.layer_group),
-            'score'      :        Score(skin_path=self.skin, layer_group=self.layer_group),
-            'combo'      :        Combo(skin_path=self.skin, layer_group=self.layer_group),
-            'accuracy'   :     Accuracy(skin_path=self.skin, layer_group=self.layer_group),
-            'key_1'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
-            'key_2'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
-            'key_3'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
-            'key_4'      :          Key(skin_path=self.skin, layer_group=self.layer_group),
-            'note_1'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group)),
-            'note_2'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group)),
-            'note_3'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group1)),
-            'note_4'     : partial(Note(skin_path=self.skin, layer_group=self.layer_group))
-        }
+        self.hit_list = sorted(self.hit_objects)
+        self.next_note = 0
         
-        for widget in self.widgets.items():
-            self.layer_group.add(widget)
-        
-        # Cria uma máscara de pixels para colisões perfeitas (ignora áreas transparentes)
-        self.masks = {(i, pygame.mask.from_surface(self.widgets[i][0])) for i in self.widgets.keys() if 'note' in i or 'key' in i}
-        
-        
-        # CONFIGURAÇÃO DA MÚSICA
+        # --- Carregamento de Áudio ---
         self.audio = difficult['AudioFilename']
         pygame.mixer.music.load(self.audio)
         pygame.mixer.music.set_volume(0.05)
         pygame.mixer.music.play()
-    
+        
+        # --- Carregamento da Skin (YAML) ---
+        skin_path = f'assets/skins/{self.skin}/apparence_4k.yaml'
+        with open(skin_path, 'r', encoding='utf-8') as apparence_4k:
+            self.ui = yaml.safe_load(apparence_4k)
+        
+        # --- Instanciação dos Elementos da Skin ---
+        self.skin_elements = {
+            'background': Background(ui=self.ui['background'], layer_group=self.layer_group),
+            'foreground': Foreground(ui=self.ui['track_lane'], layer_group=self.layer_group),
+            'score':      Score(ui=self.ui['score'], layer_group=self.layer_group),
+            'combo':      Combo(ui=self.ui['combo'], layer_group=self.layer_group),
+            'accuracy':   Accuracy(ui=self.ui['accuracy'], layer_group=self.layer_group)
+        }
+        
+        # Gerando Keys e Notes via loop
+        self.skin_elements['keys'] = {
+            f'key_{i}': Key(ui=self.ui['keys'][f'key_{i}'], layer_group=self.layer_group) 
+            for i in range(1, 5)
+        }
+        self.skin_elements['notes'] = {
+            f'note_{i}': partial(Note, ui=self.ui['notes'][f'note_{i}'], layer_group=self.layer_group) 
+            for i in range(1, 5)
+        }
+        
+        # --- Geração de Máscaras para Colisão ---
+        self.masks = {}
+        # Unindo dicionários para gerar máscaras de keys e templates de notas
+        elementos_colisao = {**self.skin_elements['keys'], **self.skin_elements['notes']} 
+        
+        for k, v in elementos_colisao.items():
+            self.masks[k] = pygame.mask.from_surface(v.image)
     
     def start(self):
-        #___________________________________________________________________________________________
-        #__LOOP PRINCIPAL DO JOGO___________________________________________________________________
+        # Loop principal
         while self.run:
-            
-            #_______________________________________________________________________________________
-            #__EVENTOS DE ENTRADA___________________________________________________________________
+            # --- Entrada do Usuário ---
             for events in pygame.event.get():
-                if events.type == pygame.QUIT:    # Clique no 'X' da janela
-                    self.run = False              # Encerra o loop
+                if events.type == pygame.QUIT:
+                    self.run = False
             
-            #_______________________________________________________________________________________
-            #__LÓGICA DO JOGO_______________________________________________________________________
-            # (Espaço reservado para cálculos de tempo e pontuação)
+            # --- Lógica e Renderização ---
+            self.screen.fill("#5E5B8B") # Fundo sólido
             
-            # impact = pygame.sprite.groupcollide(self.keys_group, self.notes_group, False, True)
-            # all_notes_impacted: dict[Note, dict[int, int]] = {}
+            # 1. Desenho da Esteira (Widgets estáticos)
+            # Nota: Verifique se 'self.widgets' foi definido ou se deve usar 'self.skin_elements'
+            self.screen.blit(self.widgets['background'][0], self.widgets['background'][1])
+            self.screen.blit(self.widgets['foreground'][0], self.widgets['foreground'][1])
             
-            # for key, notes_impacted in impact.items():
-            #     for note in notes_impacted:
-            #         note.kill()
-            #         all_notes_impacted[note] = [note.timestamp, note.pos_x, note.rect.y]
-            
-            # for note_impact in all_notes_impacted.items:
-            #     note_impact: list[int]
-            #     for note_timestamp, note_pos_x, note_pos_y in note_impact:
-            #         if self.h-100-note_pos_y > 20:
-                        
-                    
-            #         if self.h-100-note_pos_y > 192:
-                        
-                    
-            #         if self.h-100-note_pos_y > 320:
-                        
-                    
-            #         if self.h-100-note_pos_y > 448:
-                        
-            
-            
-            
-            #_______________________________________________________________________________________
-            #__LIMPEZA DA TELA______________________________________________________________________
-            self.screen.fill('#5E5B8B')           # Fundo sólido roxo acinzentado
-            
-            #_______________________________________________________________________________________
-            #__RENDERIZAÇÃO DE OBJETOS______________________________________________________________
-            
-            # 1. Desenho da Esteira
-            try:
-                self.screen.blit(self.widgets['background'][0], self.widgets['background'][1])
-                self.screen.blit(self.widgets['foreground'][0], self.widgets['foreground'][1])
-            except TypeError: print(f'\n\n\n{self.widgets}\n\n\n')
-            
-            # 3. Processamento e Desenho das Notas
+            # 2. Spawn e Atualização das Notas
             self.time = pygame.mixer.music.get_pos()
             
             while self.next_note < len(self.hit_list):
@@ -140,28 +100,24 @@ class Gameplay:
                 
                 if timestamp - self.time < 2000:
                     match pos_x:
-                        case 64:  Note(self.widgets['note_1'], timestamp,  self.notes_group)
-                        case 192: Note(self.widgets['note_2'], timestamp,  self.notes_group)
-                        case 320: Note(self.widgets['note_3'], timestamp,  self.notes_group)
-                        case 448: Note(self.widgets['note_4'], timestamp,  self.notes_group)
-                    
+                        case 64:  Note(self.widgets['note_1'], timestamp, self.notes_group)
+                        case 192: Note(self.widgets['note_2'], timestamp, self.notes_group)
+                        case 320: Note(self.widgets['note_3'], timestamp, self.notes_group)
+                        case 448: Note(self.widgets['note_4'], timestamp, self.notes_group)
                     self.next_note += 1
-                
                 else:
                     break
             
-            self.notes_group.draw(self.screen,)
-            self.notes_group.update(self.time, 20) # Atualiza a posição de todas as notas
-            # 4. Notas Longas (Slider/Hold)
+            # 3. Desenho e Update dos Grupos
+            self.layer_group.draw(self.screen)
+            self.layer_group.update()
             
-            #_______________________________________________________________________________________
-            #__ATUALIZAÇÃO DA TELA__________________________________________________________________
-            pygame.display.flip()                 # Envia o frame renderizado para o monitor
+            # --- Atualização da Janela ---
+            pygame.display.flip()
             
-            #_______________________________________________________________________________________
-            #__CONTROLE DE FPS______________________________________________________________________
-            self.fps = self.clock.tick(60)        # Limita o jogo a 60 quadros por segundo
+            # --- Controle de Framerate ---
+            fps_target = self.settings.get('fps', 60)
+            self.fps = self.clock.tick(fps_target)
         
-        
-        # Finalização Segura do Pygame
+        # Finalização
         pygame.quit()

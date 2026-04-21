@@ -1,23 +1,20 @@
 #________IMPORTAÇÃO DE DEPENDÊNCIAS_________________________________________________________________
 import pygame                       # Motor de jogo para manipulação de sprites e física
-import json
+import yaml
 
 #________CLASSE DE NOTAS MUSICAIS (SPRITES)_________________________________________________________
 class Note(pygame.sprite.Sprite):
     
     #_______________________________________________________________________________________________
     #__CONSTRUTOR DA NOTA___________________________________________________________________________
-    def __init__(self, skin_path: str, layer_group: pygame.sprite.LayeredUpdates, timestamp: int):
+    def __init__(
+            self, 
+            settings: dict, 
+            sprite_group: pygame.sprite.Group
+):
         '''
         Inicializa um objeto da nota musical que desce pela tela.
         '''
-        
-        # Leitura do apparence_4k.json pra extração das definições e configurações da skin
-        with open(f'{skin_path}/apparence.json', 'r', encoding='utf-8') as apparence_4k:
-            
-            # Transformação texto json -> dicionário do python
-            self.ui = json.load(apparence_4k)
-            self.background = self.ui['background']
         
         # Carregamento da imagem
         self.image = pygame.image.load(self.ui['texture']).convert_alpha()
@@ -43,11 +40,11 @@ class Note(pygame.sprite.Sprite):
     
     #_______________________________________________________________________________________________
     #__ATUALIZAÇÃO DE FRAME_________________________________________________________________________
-    def update(self, speed: int):
+    def update(self, delta_time: int, speed: int):
         '''
         Executa a lógica de movimento a cada ciclo do loop principal.
         Faz a nota descer verticalmente somando a velocidade ao eixo Y.
         '''
-        self.rect.y += speed
+        self.rect.y += speed * delta_time
         if self.rect.top > 900:
             self.kill()

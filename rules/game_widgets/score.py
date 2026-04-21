@@ -1,13 +1,36 @@
-import json
+import yaml
 import pygame
 from pathlib import Path
-from game_widgets._widget import Widget
 
-class Score(Widget):
+
+class Score(pygame.sprite.Sprite):
     
-    def __init__(self, skin_path: str, layer_group: pygame.sprite.LayeredUpdates):
+    def __init__(
+            self, 
+            settings: dict, 
+            sprite_group: pygame.sprite.Group
+):
         '''
         Inicializa um objeto do fundo decorativo.
         '''
-        super().__init__()
         
+        # Carregamento da imagem
+        self.image = pygame.image.load(self.background['texture']).convert_alpha()
+        
+        # Tamanho da imagem
+        self.image = pygame.transform.scale(self.image, (self.background['width'], self.background['height']))
+        
+        # Posição da imagem na tela
+        self.rect = self.image.get_rect(midtop=(self.background['pos_x'], self.background['pos_y']))
+        
+        # Camada de sobreposção da imagem
+        self._layer = self.background['pos_z']
+        
+        # Grupo de sprites do jogo
+        super().__init__(sprite_group)
+        
+        # Transparência da imagem
+        self.image.set_alpha(self.background['opacity'])
+    
+    def update(self, *args, **kwargs):
+            pass

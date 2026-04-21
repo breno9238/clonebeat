@@ -1,4 +1,5 @@
 {
     "skin":"Padrão",
-    "Input":"Keyboard" 
+    "Input":"Keyboard" ,
+    "fps": 60
 }
