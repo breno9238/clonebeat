@@ -55,6 +55,27 @@ class BeatmapsSelector(ctk.CTkFrame):
         # Lista que armazenará os cards principais de beatmaps
         self.cards = []  # Cada item será um BeatmapItem
         
+        self.voltar_buttom = ctk.CTkButton(
+            master=self,
+            text="VOLTAR",
+            width=200,
+            height=40,
+            corner_radius=7,
+            command=self.voltar_menu,
+            bg_color="#1d1d1d",
+            fg_color="#5F9EA0",
+            hover_color="#4F8485"
+            )
+        
+        self.voltar_buttom.place(
+            relx=0.2,
+            rely=0.1,
+            relwidth=0.25,
+            relheight=0.1,
+            anchor="center"
+        )
+        
+        
         #__________________________________________________________________________________________
         # CRIAÇÃO DOS CARDS DE BEATMAP
         # Itera sobre todos os beatmaps lidos e cria visualmente os cards
@@ -82,7 +103,10 @@ class BeatmapsSelector(ctk.CTkFrame):
                 # Posiciona o card no topo da lista
                 card.ui_show()
                 card.pack(side='top', fill='x', padx=10, pady=10, expand=True)
-
+    
+    def voltar_menu(self):
+        self.master.focus()
+        self.destroy()
 
 #__________________________________________________________________________________________________
 # ITEM DE BEATMAP PRINCIPAL (MAPA COMPLETO)

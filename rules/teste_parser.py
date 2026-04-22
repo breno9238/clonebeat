@@ -1,6 +1,6 @@
 import configparser
 from skin_reader import SkinReader
-
+from pathlib import Path
 
 read = SkinReader()
 
