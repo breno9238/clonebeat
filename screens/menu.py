@@ -1,4 +1,6 @@
 import customtkinter as ctk
+from .beatmap_selector import PhaseSelector
+from .settings_selector import SettingsSelector
 
 class Menu(ctk.CTk):
     
@@ -11,9 +13,11 @@ class Menu(ctk.CTk):
         self.title('Ritmo e Espada')
         self.geometry('800x520')
         
+        
         self.play_button = ctk.CTkButton(
             master=self,
             text='JOGAR',
+            command=self.show_phase_selector
             
         )
         self.play_button.place(
@@ -27,7 +31,8 @@ class Menu(ctk.CTk):
         
         self.settings_button = ctk.CTkButton(
             master=self,
-            text='CONFIGURAÇES'
+            text='CONFIGURAÇES',
+            command=self.show_settings_selector
         )
         
         self.settings_button.place(
@@ -41,7 +46,8 @@ class Menu(ctk.CTk):
         
         self.quit_button = ctk.CTkButton(
             master=self,
-            text='QUIT'
+            text='QUIT',
+            command=self.destroy
         )
         self.quit_button.place(
             relx=0.5,
@@ -50,6 +56,9 @@ class Menu(ctk.CTk):
             relheight=0.1,
             anchor="center"
         )
-        
-        
-        self.mainloop()
+    
+    def show_phase_selector(self):
+        self.phase_selector = PhaseSelector(self)
+    
+    def show_settings_selector(self):
+        self.settings_selector = SettingsSelector(self)

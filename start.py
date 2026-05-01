@@ -1,2 +1,4 @@
 from screens.menu import Menu
-start = Menu()
+
+menu = Menu()
+menu.mainloop()
