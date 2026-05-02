@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from pathlib import Path
 from rules.skin_reader import SkinReader
+from rules.skin_reader import SkinExtract
 
 class SkinSelector(ctk.CTkFrame):
     def __init__(self, master):

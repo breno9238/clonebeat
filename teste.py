@@ -47,7 +47,7 @@ spawn_timer = 0
 # LOOP
 running = True
 while running:
-    clock.tick(60)
+    clock.tick(100)
     screen.fill(BG)
 
     # EVENTOS
