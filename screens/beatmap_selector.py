@@ -4,7 +4,7 @@ from .gameplay import Gameplay
 
 #__________________________________________________________________________________________________
 # TELA DO SELETOR DE BEATMAPS
-class PhaseSelector(ctk.CTkFrame):
+class BeatmapSelector(ctk.CTkFrame):
     """
     Frame principal que lista todos os beatmaps disponíveis.
     Permite expandir cada beatmap para ver suas dificuldades e iniciar o jogo.
@@ -38,6 +38,24 @@ class PhaseSelector(ctk.CTkFrame):
             scrollbar_fg_color='#555',       # Cor da barra de rolagem
             scrollbar_button_color="#575757" # Cor do botão da barra de rolagem
         )
+        
+        self.buttom = ctk.CTkButton(
+            master=self,
+            text="VOLTAR",
+            command=self.back_menu,
+            corner_radius=10,
+            
+            
+        )
+        
+        self.buttom.place(
+            rely=0.1,
+            relx=0.1,
+            relwidth=0.2,
+            relheight=0.1
+        )
+
+    
         # Posiciona a lista rolável na parte direita da tela
         self.scroll_container.place(relx=0.6, rely=0, relwidth=0.4, relheight=1)
         
@@ -76,7 +94,9 @@ class PhaseSelector(ctk.CTkFrame):
                 # Posiciona o card no topo da lista
                 card.ui_show()
                 card.pack(side='top', fill='x', padx=10, pady=10, expand=True)
-
+    
+    def back_menu(self):
+        self.destroy()
 
 #__________________________________________________________________________________________________
 # ITEM DE BEATMAP PRINCIPAL (MAPA COMPLETO)

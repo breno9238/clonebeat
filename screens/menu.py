@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from .beatmap_selector import PhaseSelector
+from .beatmap_selector import BeatmapSelector
 from .settings_selector import SettingsSelector
 
 class Menu(ctk.CTk):
@@ -58,7 +58,7 @@ class Menu(ctk.CTk):
         )
     
     def show_phase_selector(self):
-        self.phase_selector = PhaseSelector(self)
+        self.phase_selector = BeatmapSelector(self)
     
     def show_settings_selector(self):
         self.settings_selector = SettingsSelector(self)

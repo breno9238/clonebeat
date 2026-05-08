@@ -71,7 +71,7 @@ class Beatmap:
         
         # Cria dicionário de dificuldades {arquivo.osu: None inicialmente}
         self.difficults: dict[Path, dict] = {d: None for d in beatmap.glob('*.osu')}
-         
+        
         # Percorre cada dificuldade do mapa(.osu)
         for diff in self.difficults:
             
