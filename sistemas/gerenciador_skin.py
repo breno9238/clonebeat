@@ -17,8 +17,8 @@ class GerenciadorSkin:
         # ==========================================
         # SKIN PADRÃO
         # ==========================================
-        self.pasta_default = Path(
-            "recursos/skins/default"
+        self.pasta_padrao = Path(
+            "recursos/skins/padrao"
         )
 
         self.data = {}
@@ -48,13 +48,13 @@ class GerenciadorSkin:
             return arquivo_skin
 
         # ==========================================
-        # FALLBACK DEFAULT
+        # FALLBACK padrao
         # ==========================================
-        arquivo_default = (
-            self.pasta_default / nome_arquivo
+        arquivo_padrao = (
+            self.pasta_padrao / nome_arquivo
         )
 
-        return arquivo_default
+        return arquivo_padrao
 
     # ==========================================
     # CARREGAR INI
@@ -73,11 +73,11 @@ class GerenciadorSkin:
         )
 
         # ==========================================
-        # DEFAULTS
+        # padraoS
         # ==========================================
         self.data = {
 
-            "nome": "Default",
+            "nome": "padrao",
 
             "largura_nota": 64,
 
@@ -95,7 +95,7 @@ class GerenciadorSkin:
 
         self.data["nome"] = secao.get(
             "Nome",
-            fallback="Default"
+            fallback="padrao"
         )
 
         self.data["largura_nota"] = (

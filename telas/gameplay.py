@@ -63,7 +63,8 @@ class TelaGameplay(arcade.View):
             tempo_nota, coluna = (
                 self.notas_restantes.pop(0)
             )
-
+            print(type(self.skin.texturas_notas[coluna]))
+            print(self.skin.texturas_notas[coluna])
             self.lista_notas.append(
 
                 Nota(
@@ -134,19 +135,15 @@ class TelaGameplay(arcade.View):
                 (20, 20, 30)
             )
 
+        self.receptores = arcade.SpriteList()
+
         for i, x in enumerate(COLUNAS_X):
-
-            receptor = arcade.Sprite()
-
-            receptor.texture = (
-                self.skin.texturas_receptor[i]
-            )
-
+            receptor = arcade.Sprite(self.skin.texturas_receptor[i])
             receptor.center_x = x
-
             receptor.center_y = Y_RECEPTOR
-
-            receptor.draw()
+            self.receptores.append(receptor)
+            
+            self.receptores.draw()
 
         self.lista_notas.draw()
 

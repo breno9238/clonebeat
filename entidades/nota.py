@@ -18,7 +18,7 @@ class Nota(arcade.Sprite):
     ):
 
         super().__init__(
-            texture=textura
+            path_or_texture=textura
         )
 
         self.width = largura
