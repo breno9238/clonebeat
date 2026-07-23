@@ -1,12 +1,19 @@
 import arcade
 
+from pathlib import Path
+
 # ==========================================
 # JANELA
 # ==========================================
 LARGURA_TELA = 800
 ALTURA_TELA = 600
 
-TITULO_JOGO = "SUPER 4K RHYTHM"
+TITULO_JOGO = 'SUPER 4K RHYTHM'
+
+# ==========================================
+# CAMINHOS
+# ==========================================
+CAMINHO_PASTA_FASES = Path(r'fases')
 
 # ==========================================
 # NOTAS

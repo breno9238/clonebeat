@@ -26,22 +26,22 @@ class TelaConfiguracoes(arcade.View):
         )
 
         arcade.draw_text(
-            "CONFIGURAÇÕES",
+            'CONFIGURAÇÕES',
             LARGURA_TELA / 2,
             500,
             arcade.color.CYAN,
             36,
-            anchor_x="center",
+            anchor_x='center',
             bold=True
         )
 
         arcade.draw_text(
-            "SKIN ATUAL",
+            'SKIN ATUAL',
             LARGURA_TELA / 2,
             350,
             arcade.color.WHITE,
             20,
-            anchor_x="center"
+            anchor_x='center'
         )
 
         arcade.draw_text(
@@ -50,7 +50,7 @@ class TelaConfiguracoes(arcade.View):
             300,
             arcade.color.YELLOW,
             32,
-            anchor_x="center",
+            anchor_x='center',
             bold=True
         )
 

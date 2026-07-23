@@ -28,29 +28,29 @@ class TelaResultados(arcade.View):
         )
 
         arcade.draw_text(
-            "RESULTADO",
+            'RESULTADO',
             LARGURA_TELA / 2,
             450,
             arcade.color.CYAN,
             40,
-            anchor_x="center",
+            anchor_x='center',
             bold=True
         )
 
         arcade.draw_text(
-            f"PONTUAÇÃO: {self.pontuacao}",
+            f'PONTUAÇÃO: {self.pontuacao}',
             LARGURA_TELA / 2,
             320,
             arcade.color.WHITE,
             24,
-            anchor_x="center"
+            anchor_x='center'
         )
 
         arcade.draw_text(
-            f"MAX COMBO: {self.combo}",
+            f'MAX COMBO: {self.combo}',
             LARGURA_TELA / 2,
             270,
             arcade.color.WHITE,
             24,
-            anchor_x="center"
+            anchor_x='center'
         )
