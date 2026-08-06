@@ -10,6 +10,12 @@ class GerenciadorMúsica:
     
     def __init__(self, arquivo_música):
         
-        self.música_crua = Path(arquivo_música)
-        self.música = arcade.load_sound(self.música_crua)
-        self.player = arcade.play_sound(self.música, 1, 0, False, 1)
+        self.arquivo_música = Path(arquivo_música)
+    
+    def play(self):
+        
+        self.música = arcade.load_sound(self.arquivo_música)
+        self.player = arcade.play_sound(self.música, volume=VOLUME)
+    
+    def stop(self):
+        arcade.stop_sound(self.player)

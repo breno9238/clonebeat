@@ -14,13 +14,14 @@ class GerenciadorSkin:
         
         self.pasta_skin = Path(pasta_skin)
         
-        self.data = {
-            'texturas_notas'    : [],
-            'texturas_receptor' : [],
-            'configurações'     : {}
-            }
+        self.texturas_receptor = []
+        self.texturas_receptor_clicado = []
+        self.texturas_notas    = []
+        self.nome              = None
+        self.largura_nota      = None
+        self.altura_nota       = None
         
-        
+    
         self.carregar_skin_ini()
         self.carregar_texturas()
     
@@ -47,26 +48,44 @@ class GerenciadorSkin:
             return
         
         seção = parser['aparência']
-        self.data['nome']         = seção.get('Nome', fallback='padrao')
-        self.data['largura_nota'] = seção.getint('LarguraNota', fallback=64)
-        self.data['altura_nota']  = seção.getint('AlturaNota', fallback=24)
+        self.nome         = seção.get('Nome', fallback='padrao')
+        self.largura_nota = seção.getint('LarguraNota', fallback=64)
+        self.altura_nota  = seção.getint('AlturaNota', fallback=24)
     
     # ==========================================
     # CARREGAR TEXTURAS
     # ==========================================
     def carregar_texturas(self):
         
-        self.data['texturas_notas'].clear()
-        self.data['texturas_receptor'].clear()
+        self.texturas_notas.clear()
+        self.texturas_receptor.clear()
+        self.texturas_receptor_clicado.clear()
         
         for i in range(1, 5):
             
             # NOTAS
             caminho_nota = (self.obter_arquivo(f'note_{i}.png'))
             textura_nota = (arcade.load_texture(caminho_nota))
-            self.data['texturas_notas'].append(textura_nota)
+            self.texturas_notas.append(textura_nota)
             
             # RECEPTORES
             caminho_receptor = (self.obter_arquivo(f'receptor_{i}.png'))
             textura_receptor = (arcade.load_texture(caminho_receptor))
-            self.data['texturas_receptor'].append(textura_receptor)
+            self.texturas_receptor.append(textura_receptor)
+            
+            # RECEPTORES CLICADOS
+            caminho_receptor_clicado = (
+                self.obter_arquivo(f'receptor_{i}_hit.png')
+            )
+            
+            if caminho_receptor_clicado.exists():
+                textura_receptor_clicado = (
+                    arcade.load_texture(caminho_receptor_clicado)
+                )
+            
+            else:
+                textura_receptor_clicado = textura_receptor
+            
+            self.texturas_receptor_clicado.append(
+                textura_receptor_clicado
+            )

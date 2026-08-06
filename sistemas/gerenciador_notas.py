@@ -8,7 +8,7 @@ class GerenciadorNotas:
     def __init__(self, arquivo_notas):
         
         self.arquivo_notas = Path(arquivo_notas)
-        self.data = dict(self.carregar_notas_ini())
+        self.data = self.carregar_notas_ini()
     
     # ==========================================
     # CARREGAR INI

@@ -70,10 +70,10 @@ class MenuPrincipal(arcade.View):
             escolha = self.opções[self.indice]
             
             if escolha == 'INICIAR': 
-                self.window.show_view(MenuFases())
+                self.window.show_view(MenuFases(self))
             
             elif escolha == 'CONFIGURAÇÕES':
-                self.window.show_view(TelaConfiguracoes())
+                self.window.show_view(TelaConfiguracoes(self))
             
             elif escolha == 'SAIR':
                 arcade.close_window()

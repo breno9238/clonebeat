@@ -8,10 +8,10 @@ from regras.configuracoes import *
 # ==========================================
 class TelaConfiguracoes(arcade.View):
 
-    def __init__(self):
+    def __init__(self, view_anterior):
         super().__init__()
 
-        self.skins = list(SKINS.keys())
+        self.skins = list()
 
         self.indice = self.skins.index(
             skin_atual
@@ -43,7 +43,6 @@ class TelaConfiguracoes(arcade.View):
             20,
             anchor_x='center'
         )
-
         arcade.draw_text(
             self.skins[self.indice],
             LARGURA_TELA / 2,

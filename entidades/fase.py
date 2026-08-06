@@ -1,11 +1,11 @@
-import os
+from pathlib import Path
 
 
 # ==========================================
 # FASE
 # ==========================================
 class Fase:
-
+    
     def __init__(
         self,
         numero_mundo,
@@ -13,13 +13,15 @@ class Fase:
         notas,
         skin,
         música,
-        desbloqueada=True,
-        melhor_nota='-'
+        background,
     ):
         self.numero_mundo = numero_mundo
         self.nome = nome
-        self.notas = notas
-        self.skin = skin
-        self.música = música
-        self.desbloqueada = desbloqueada
-        self.melhor_nota = melhor_nota
+        self.notas = Path(notas)
+        self.skin = Path(skin)
+        self.música = Path(música)
+        
+        if background is not None:
+            self.background = Path(background)
+        else:
+            self.background = None
