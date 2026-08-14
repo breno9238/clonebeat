@@ -1,4 +1,5 @@
 import arcade
+import serial  # Biblioteca para conversar com o Arduino Uno
 
 from regras.configuracoes import *
 
@@ -9,6 +10,14 @@ from telas.resultados import TelaResultados
 from sistemas.gerenciador_skin import GerenciadorSkin
 from sistemas.gerenciador_notas import GerenciadorNotas
 from sistemas.gerenciador_música import GerenciadorMúsica
+
+
+# ==========================================
+# BANDEIRA DE TESTE
+# ==========================================
+# True  -> Joga usando as teclas normais do computador (modo teste de mesa)
+# False -> Joga batendo nos tambores físicos conectados no Arduino Uno
+USAR_TECLADO = True
 
 
 # ==========================================
@@ -37,11 +46,26 @@ class TelaGameplay(arcade.View):
         self.resultado = ''
         self.tempo = 0
         
+        self.cooldown_inicial = 2.0
+        self.musica_iniciada = False
+        
         self.indice = 0
+        
+        # Inicializa o Arduino apenas se NÃO for usar o teclado
+        self.arduino = None
+        if not USAR_TECLADO:
+            try:
+                # Altere 'COM3' para a porta USB correta do seu computador
+                self.arduino = serial.Serial('COM3', 115200, timeout=0)
+                print("CONEXÃO: Arduino Uno conectado com sucesso no modo Bateria!")
+            except Exception as e:
+                print(f"AVISO: Modo bateria ativo, mas o Arduino não foi encontrado. Erro: {e}")
+        else:
+            print("CONEXÃO: Modo Teclado ativo! Inputs do Arduino estão desligados.")
         
         self.tempo_spawn = ((ALTURA_TELA - Y_RECEPTOR) / VELOCIDADE_QUEDA)
         
-        arcade.set_background_color((25, 25, 25))
+        arcade.set_background_color((20, 10, 40))
         
         self.pontuação_display = arcade.Text(
             f'PONTOS: {self.pontuação}',
@@ -77,9 +101,34 @@ class TelaGameplay(arcade.View):
             receptor.center_y = Y_RECEPTOR
             self.receptores.append(receptor)
         
-        self.música.play()
-    
     def on_update(self, delta_time):
+        
+        if self.cooldown_inicial > 0:
+            self.cooldown_inicial -= delta_time
+            return
+            
+        if not self.musica_iniciada:
+            self.música.play()
+            self.musica_iniciada = True
+            
+            if self.arduino:
+                self.arduino.reset_input_buffer()
+            return 
+        
+        # Só escuta a porta USB se a flag estiver em modo Bateria (False)
+        if not USAR_TECLADO and self.arduino and self.arduino.in_waiting > 0:
+            try:
+                sinal = self.arduino.readline().decode('utf-8').strip()
+                
+                if sinal in ["1", "2", "3", "4"]:
+                    coluna_arduino = int(sinal) - 1
+                    
+                    for tecla_real, col_idx in TECLAS_COLUNAS.items():
+                        if col_idx == coluna_arduino:
+                            self.on_key_press(tecla_real, None)
+                            break
+            except Exception:
+                pass
         
         self.tempo += delta_time
         
@@ -88,12 +137,14 @@ class TelaGameplay(arcade.View):
         self.resultado_display.text = self.resultado
         
         if self.indice < len(self.notas_restantes):
-            tempo_proxima_nota = self.notas_restantes[self.indice][0]
-            print(f"Tempo Jogo: {self.tempo:.2f} | Tempo Alvo Spawn: {(tempo_proxima_nota - self.tempo_spawn):.2f} (Nota: {tempo_proxima_nota} - Spawn: {self.tempo_spawn:.2f})")
+            # CORREÇÃO: Acessa a posição [0] da tupla para ler o tempo numérico da nota de forma segura
+            tempo_proxima_nota = self.notas_restantes[self.indice][0] + self.tempo_spawn
+            print(f"Tempo Jogo: {self.tempo:.2f} | Tempo Alvo Spawn: {(tempo_proxima_nota - self.tempo_spawn):.2f} (Nota: {tempo_proxima_nota:.3f} - Spawn: {self.tempo_spawn:.2f})")
         else: print("DEBUG: Lista de notas está vazia ou o índice já chegou ao fim!")
         
+        # CORREÇÃO: Acessa a posição [0] da tupla nas duas checagens matemáticas do laço while
         while (self.indice < len(self.notas_restantes) and 
-            self.tempo >= (self.notas_restantes[self.indice][0] - self.tempo_spawn)):
+            self.tempo >= ((self.notas_restantes[self.indice][0] + self.tempo_spawn) - self.tempo_spawn)):
             
             tempo_nota, coluna = (self.notas_restantes[self.indice])
             
@@ -122,6 +173,10 @@ class TelaGameplay(arcade.View):
         if self.indice >= len(self.notas_restantes) and len(self.lista_notas) == 0:
             
             self.música.stop()
+            
+            if self.arduino:
+                self.arduino.close()
+                
             self.window.show_view(
                 TelaResultados(
                     self.pontuação,
@@ -153,9 +208,16 @@ class TelaGameplay(arcade.View):
         
         if key == arcade.key.ESCAPE:
             self.música.stop()
+            
+            if self.arduino:
+                self.arduino.close()
+                
             self.window.show_view(self.view_anterior)
             return
         
+        if not USAR_TECLADO and modifiers is not None:
+            return
+            
         if key not in TECLAS_COLUNAS and key != arcade.key.ESCAPE:
             return
         
