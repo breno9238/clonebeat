@@ -51,17 +51,17 @@ class TelaGameplay(arcade.View):
         
         self.indice = 0
         
-        # Inicializa o Arduino apenas se NÃO for usar o teclado
         self.arduino = None
+        
         if not USAR_TECLADO:
             try:
                 # Altere 'COM3' para a porta USB correta do seu computador
                 self.arduino = serial.Serial('COM3', 115200, timeout=0)
-                print("CONEXÃO: Arduino Uno conectado com sucesso no modo Bateria!")
+                print("CONEXÃO: Arduino Uno conectado com sucesso no modo Bateria")
             except Exception as e:
                 print(f"AVISO: Modo bateria ativo, mas o Arduino não foi encontrado. Erro: {e}")
         else:
-            print("CONEXÃO: Modo Teclado ativo! Inputs do Arduino estão desligados.")
+            print("CONEXÃO: Modo Teclado ativo Inputs do Arduino estão desligados.")
         
         self.tempo_spawn = ((ALTURA_TELA - Y_RECEPTOR) / VELOCIDADE_QUEDA)
         
@@ -217,7 +217,7 @@ class TelaGameplay(arcade.View):
         
         if not USAR_TECLADO and modifiers is not None:
             return
-            
+        
         if key not in TECLAS_COLUNAS and key != arcade.key.ESCAPE:
             return
         
