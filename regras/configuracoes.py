@@ -1,15 +1,13 @@
 import arcade
-
 from pathlib import Path
 
 # ==========================================
-# JANELA
+# JANELA (Forçado bruto para Full HD)
 # ==========================================
-LARGURA_TELA = 800
-ALTURA_TELA = 600
+LARGURA_TELA = 1920
+ALTURA_TELA = 1080
 
 TITULO_JOGO = 'DRUM BEAT'
-
 VOLUME = 0.5
 
 # ==========================================
@@ -20,15 +18,14 @@ CAMINHO_PASTA_FASES = Path(r'fases')
 # ==========================================
 # NOTAS
 # ==========================================
-VELOCIDADE_QUEDA = 1200
-
-Y_RECEPTOR = 50
-MARGEM_ACERTO = 80
+VELOCIDADE_QUEDA = 1500
+Y_RECEPTOR = 100  
+MARGEM_ACERTO = 200
 
 # ==========================================
-# COLUNAS
+# COLUNAS (Calculadas de forma bruta para o centro de 1920)
 # ==========================================
-COLUNAS_X = [250, 350, 450, 550]
+COLUNAS_X = [795, 905, 1015, 1125]
 
 # ==========================================
 # INPUTS
@@ -41,3 +38,9 @@ TECLAS_COLUNAS = {
     arcade.key.J: 2,
     arcade.key.K: 3
 }
+
+# ==========================================
+# VARIÁVEIS DE CONFIGURAÇÃO DESSA TELA
+# ==========================================
+# 🚀 ADICIONADO: Define qual pasta dentro de skins/ o jogo vai carregar por padrão
+skin_atual = 'padrao'

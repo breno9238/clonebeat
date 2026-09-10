@@ -3,7 +3,7 @@ import arcade
 from regras.configuracoes import *
 
 from telas.menu_fases import MenuFases
-from telas.configuracoes import TelaConfiguracoes
+from telas.menu_configuracoes import TelaConfiguracoes
 
 
 # ==========================================
@@ -30,12 +30,17 @@ class MenuPrincipal(arcade.View):
             (20, 10, 40)
         )
         
+        # Pega as dimensões reais da tela cheia
+        largura_real = self.window.width
+        altura_real = self.window.height
+        
+        # Aumentei a fonte do título de 40 para 75 e subi para 82% da altura
         arcade.draw_text(
             TITULO_JOGO,
-            LARGURA_TELA / 2,
-            470,
+            largura_real / 2,
+            altura_real * 0.82,
             arcade.color.CYAN,
-            40,
+            75,
             anchor_x='center',
             bold=True
         )
@@ -48,12 +53,14 @@ class MenuPrincipal(arcade.View):
                 else arcade.color.GRAY
             )
             
+            # Aumentei a fonte dos botões de 24 para 42 
+            # Aumentei o espaçamento entre eles de 60 para 95 pixels para ver melhor de longe
             arcade.draw_text(
                 texto,
-                LARGURA_TELA / 2,
-                300 - (i * 60),
+                largura_real / 2,
+                (altura_real * 0.48) - (i * 95),
                 cor,
-                24,
+                42,
                 anchor_x='center',
                 bold=True
             )

@@ -73,18 +73,21 @@ class GerenciadorSkin:
         
         for i in range(1, 5):
             
-            # NOTAS (Aplica o tamanho exclusivo de nota)
-            caminho_nota = (self.obter_arquivo(f'note_{i}.png'))
+            # 🚀 FIX CORREÇÃO BRUTA: Busca 'nota_i.png' em vez de 'note_i.png' para casar com os arquivos reais do VS Code
+            caminho_nota = (self.obter_arquivo(f'nota_{i}.png'))
             textura_nota = (arcade.load_texture(caminho_nota))
             textura_nota.width = self.largura_nota
             textura_nota.height = self.altura_nota
             self.texturas_notas.append(textura_nota)
             
-            # RECEPTORES (ALTERADO: Aplica o tamanho exclusivo de receptor)
+            # RECEPTORES (Remove a proporção achatada e força a textura a nascer redonda baseada no maior eixo)
             caminho_receptor = (self.obter_arquivo(f'receptor_{i}.png'))
             textura_receptor = (arcade.load_texture(caminho_receptor))
-            textura_receptor.width = self.largura_receptor
-            textura_receptor.height = self.altura_receptor
+            
+            # Força o tamanho da textura interna a ser quadrado perfeito, consertando o bug visual dos ovais
+            tamanho_quadrado = max(self.largura_receptor, self.altura_receptor)
+            textura_receptor.width = tamanho_quadrado
+            textura_receptor.height = tamanho_quadrado
             self.texturas_receptor.append(textura_receptor)
             
             # RECEPTORES CLICADOS
@@ -96,9 +99,8 @@ class GerenciadorSkin:
                 textura_receptor_clicado = (
                     arcade.load_texture(caminho_receptor_clicado)
                 )
-                # ALTERADO: Aplica o tamanho exclusivo de receptor
-                textura_receptor_clicado.width = self.largura_receptor
-                textura_receptor_clicado.height = self.altura_receptor
+                textura_receptor_clicado.width = tamanho_quadrado
+                textura_receptor_clicado.height = tamanho_quadrado
             
             else:
                 textura_receptor_clicado = textura_receptor
