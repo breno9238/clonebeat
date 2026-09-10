@@ -192,7 +192,7 @@ class MenuFases(arcade.View):
 
         # Só exibe o nome da fase quando existem fases disponíveis.
         if self.fases:
-        fundo_y = altura_real * 0.50
+            fundo_y = altura_real * 0.50
             self.nome_fase.x = largura_real / 2  # Centraliza horizontalmente o nome da fase.
             self.nome_fase.y = altura_real * 0.80  # Posiciona o nome abaixo do título.
             self.nome_fase.draw()  # Desenha o nome da fase selecionada.

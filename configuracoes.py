@@ -18,7 +18,7 @@ CAMINHO_PASTA_FASES = Path(r'fases')  # Cria o caminho do sistema para a pasta o
 # ==========================================
 # NOTAS
 # ==========================================
-VELOCIDADE_QUEDA = 1500  # Define a velocidade vertical com que as notas descem na tela
+VELOCIDADE_QUEDA = 1000  # Define a velocidade vertical com que as notas descem na tela
 Y_RECEPTOR = 100  # Define a posição vertical fixa dos receptores de notas (onde o jogador deve apertar)
 MARGEM_ACERTO = 200  # Define a tolerância em pixels para validar se o jogador acertou a nota
 
@@ -33,8 +33,8 @@ COLUNAS_X = [795, 905, 1015, 1125]  # Define a posição horizontal fixa de cada
 USAR_TECLADO = True  # Define se o jogo aceitará comandos vindo do teclado do computador
 
 TECLAS_COLUNAS = {
-    arcade.key.A: 0,  # Mapeia a tecla 'A' do teclado para controlar a primeira coluna (índice 0)
-    arcade.key.S: 1,  # Mapeia a tecla 'S' do teclado para controlar a segunda coluna (índice 1)
+    arcade.key.D: 0,  # Mapeia a tecla 'A' do teclado para controlar a primeira coluna (índice 0)
+    arcade.key.F: 1,  # Mapeia a tecla 'S' do teclado para controlar a segunda coluna (índice 1)
     arcade.key.J: 2,  # Mapeia a tecla 'J' do teclado para controlar a terceira coluna (índice 2)
     arcade.key.K: 3   # Mapeia a tecla 'K' do teclado para controlar a quarta coluna (índice 3)
 }
