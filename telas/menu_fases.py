@@ -117,6 +117,18 @@ class MenuFases(arcade.View):
         
         if self.fases:
             self.atualizar_fase_selecionada()
+            
+    # ==========================================
+    # EVENTO AO MOSTRAR A TELA
+    # ==========================================
+    def on_show_view(self):
+        # ALTERADO APENAS AQUI: Aplica a mesma cor (20, 10, 40) do seu Menu Principal
+        arcade.set_background_color((20, 10, 40)) 
+        
+        if self.fases and self.preview is None:
+            fase = self.fases[self.indice]
+            self.preview = GerenciadorMúsica(fase.música)
+            self.preview.play()
     
     
     # ==========================================
@@ -279,8 +291,20 @@ class MenuFases(arcade.View):
         indice_anterior = self.indice
         
         if key == arcade.key.ESCAPE:
-            self.preview.stop()
-            arcade.Window.show_view(self.view_anterior)
+            if self.preview is not None:
+                self.preview.stop()
+                self.preview = None
+            self.window.show_view(self.view_anterior)
+            return
+            
+        # ENTER / SPACE (Gatilho para iniciar a música selecionada)
+        if key == arcade.key.ENTER or key == arcade.key.SPACE:
+            if self.preview is not None:
+                self.preview.stop()
+                self.preview = None
+            fase_selecionada = self.fases[self.indice]
+            self.window.show_view(TelaGameplay(self, fase_selecionada))
+            return
         
         # ESQUERDA
         if key == arcade.key.LEFT:
@@ -301,32 +325,6 @@ class MenuFases(arcade.View):
         elif key == arcade.key.DOWN:
             if self.indice + 5 < len(self.fases):
                 self.indice += 5
-        
-        # ENTER
-        elif key == arcade.key.ENTER:
-            fase = self.fases[self.indice]
-            
-            if self.preview is not None:
-                self.preview.stop()
-                self.preview = None
-            
-            self.window.show_view(
-                TelaGameplay(
-                    self,
-                    fase
-                )
-            )
-            
-            return
-        
+                
         if self.indice != indice_anterior:
             self.atualizar_fase_selecionada()
-    
-    
-    # ==========================================
-    # ESCONDER MENU
-    # ==========================================
-    def on_hide_view(self):
-        if self.preview is not None:
-            self.preview.stop()
-            self.preview = None
