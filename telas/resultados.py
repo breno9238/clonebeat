@@ -104,7 +104,7 @@ class TelaResultados(arcade.View):
         )  # Exibe a contagem de erros na cor vermelha
 
         arcade.draw_text(
-            f'MAX COMBO: {self.combo}',
+            f'COMBO MAXIMO: {self.combo}',
             alinhamento_esquerda,
             altura_real * 0.28,
             arcade.color.WHITE,

@@ -9,7 +9,7 @@ from sistemas.gerenciador_skin import GerenciadorSkin  # Importa o sistema que c
 from sistemas.gerenciador_notas import GerenciadorNotas  # Importa o leitor do mapa de notas musicais
 from sistemas.gerenciador_música import GerenciadorMúsica  # Importa o controlador do áudio da fase
 
-USAR_TECLADO = True  # Define se os comandos do jogo virão pelo teclado por padrão
+USAR_TECLADO = False  # Define se os comandos do jogo virão pelo teclado por padrão
 
 # Classe que gerencia a tela principal de jogabilidade da partida
 class TelaGameplay(arcade.View):
@@ -156,7 +156,7 @@ class TelaGameplay(arcade.View):
         
         # Laço que gera novas notas enquanto o tempo da música alcançar o instante do arquivo de notas
         while (self.indice < len(self.notas_restantes) and 
-                self.tempo + (self.tempo_spawn /2) >= self.notas_restantes[self.indice][0]):
+                self.tempo >= self.notas_restantes[self.indice][0]):
             
             tempo_nota, coluna = self.notas_restantes[self.indice]  # Desempacota o instante e a pista em que a nota deve surgir
             
@@ -182,7 +182,7 @@ class TelaGameplay(arcade.View):
             # Condicional que checa se a nota ultrapassou o receptor sem clique e ainda não registrou falha
             if nota.center_y < (Y_RECEPTOR - 150) and not hasattr(nota, 'computou_miss'):
                 self.combo = 0  # Reseta o multiplicador de combo atual do jogador
-                self.resultado = 'MISS'  # Define a string de feedback visual da tela para indicar erro
+                self.resultado = 'FALHA'  # Define a string de feedback visual da tela para indicar erro
                 self.resultado_display.color = arcade.color.RED  # Altera a cor do texto flutuante para vermelho
                 nota.computou_miss = True  # Marca o sprite para que ele não compute múltiplas falhas no mesmo loop
                 
@@ -284,13 +284,13 @@ class TelaGameplay(arcade.View):
             # Condicional que verifica se a nota estava perfeitamente alinhada ao receptor
             if distancia <= 75:
                 self.pontuação += 300  # Concede a pontuação máxima de trezentos pontos pelo tempo exato
-                self.resultado = 'MARVELOUS'  # Modifica a string de feedback para indicar uma classificação perfeita
+                self.resultado = 'PERFEITO'  # Modifica a string de feedback para indicar uma classificação perfeita
                 self.resultado_display.color = arcade.color.LIGHT_GREEN  # Configura a cor do indicador em verde claro
                 self.cont_perfeito += 1  # Incrementa a contagem de notas excelentes nas estatísticas
             # Caso a nota tenha sido acertada dentro do limite periférico externo do receptor
             else:
                 self.pontuação += 100  # Concede a pontuação reduzida de cem pontos pelo acerto bom
-                self.resultado = 'GREAT'  # Modifica a string de feedback para indicar uma classificação mediana
+                self.resultado = 'BOM'  # Modifica a string de feedback para indicar uma classificação mediana
                 self.resultado_display.color = arcade.color.LIGHT_BLUE  # Configura a cor do indicador em azul claro
                 self.cont_bom += 1  # Incrementa a contagem de notas boas nas estatísticas
         

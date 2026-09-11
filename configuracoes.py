@@ -18,7 +18,7 @@ CAMINHO_PASTA_FASES = Path(r'fases')  # Cria o caminho do sistema para a pasta o
 # ==========================================
 # NOTAS
 # ==========================================
-VELOCIDADE_QUEDA = 1000  # Define a velocidade vertical com que as notas descem na tela
+VELOCIDADE_QUEDA = 1200  # Define a velocidade vertical com que as notas descem na tela
 Y_RECEPTOR = 100  # Define a posição vertical fixa dos receptores de notas (onde o jogador deve apertar)
 MARGEM_ACERTO = 200  # Define a tolerância em pixels para validar se o jogador acertou a nota
 
