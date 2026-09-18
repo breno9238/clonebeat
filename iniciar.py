@@ -21,3 +21,6 @@ def main():
 # Garante que o jogo só rode se este arquivo for executado diretamente
 if __name__ == '__main__':
     main()
+
+
+######## sistema de dificuldades, gravar scores

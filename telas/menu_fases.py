@@ -1,9 +1,13 @@
+
 import arcade
+
 from configuracoes import *
+
 from entidades.fase import Fase
+
 from telas.tela_do_jogo import TelaGameplay
+
 from pathlib import Path
-from sistemas.gerenciador_música import GerenciadorMúsica
 
 
 # ==========================================
@@ -11,15 +15,17 @@ from sistemas.gerenciador_música import GerenciadorMúsica
 # ==========================================
 
 class MenuFases(arcade.View):
+
     # Construtor responsável por preparar todos os dados necessários para o menu de fases.
     def __init__(self, view_anterior):
         super().__init__()  # Inicializa a View do Arcade para que a tela possa funcionar corretamente.
+
         self.view_anterior = view_anterior  # Guarda a tela anterior para poder retornar a ela com ESC.
         self.fases = []  # Lista que armazenará todas as fases encontradas.
         self.indice = 0  # Guarda o índice da fase atualmente selecionada.
-        self.preview = None  # Armazena o gerenciador responsável pela música de prévia da fase.
         self.backgrounds = {}  # Guarda texturas já carregadas para evitar carregá-las novamente.
         self.background_selecionado = None  # Armazena a textura do background da fase selecionada.
+
         self.fundo_largura = 700  # Define a largura inicial do espaço destinado ao background.
         self.fundo_altura = 315  # Define a altura inicial do espaço destinado ao background.
 
@@ -48,6 +54,7 @@ class MenuFases(arcade.View):
             CAMINHO_PASTA_FASES.iterdir(),
             key=lambda pasta: pasta.name
         ):
+
             # Ignora qualquer item que não seja uma pasta de fase.
             if not pasta_fase.is_dir():
                 continue
@@ -105,28 +112,20 @@ class MenuFases(arcade.View):
         if self.fases:
             self.atualizar_fase_selecionada()
 
+
     # Executado quando esta View passa a ser a tela atualmente exibida.
     def on_show_view(self):
         arcade.set_background_color((20, 10, 40))  # Define a cor de fundo do menu.
 
-        # Inicia a música da fase selecionada caso a prévia ainda não tenha sido criada.
-        if self.fases and self.preview is None:
-            fase = self.fases[self.indice]  # Obtém a fase atualmente selecionada.
-            self.preview = GerenciadorMúsica(fase.música)  # Cria o gerenciador para reproduzir a música da fase.
-            self.preview.play()  # Inicia a reprodução da prévia.
 
-    # Atualiza todos os elementos visuais e sonoros relacionados à fase selecionada.
+    # Atualiza todos os elementos visuais relacionados à fase selecionada.
     def atualizar_fase_selecionada(self):
+
         # Não faz nada caso não existam fases disponíveis.
         if not self.fases:
             return
 
         fase = self.fases[self.indice]  # Obtém a fase correspondente ao índice atualmente selecionado.
-
-        # Para a música anterior antes de iniciar a prévia da nova fase.
-        if self.preview is not None:
-            self.preview.stop()  # Interrompe a música da fase anteriormente selecionada.
-            self.preview = None  # Remove a referência ao gerenciador anterior.
 
         self.nome_fase.text = fase.nome  # Atualiza o texto exibido com o nome da nova fase.
 
@@ -149,11 +148,10 @@ class MenuFases(arcade.View):
 
         self.atualizar_tamanho_background()  # Recalcula o tamanho do background para manter sua proporção.
 
-        self.preview = GerenciadorMúsica(fase.música)  # Cria um novo gerenciador para a música da fase selecionada.
-        self.preview.play()  # Inicia a prévia da nova fase.
 
     # Calcula o tamanho do background sem distorcer sua proporção original.
     def atualizar_tamanho_background(self):
+
         # Usa o tamanho padrão quando não existe imagem de background.
         if self.background_selecionado is None:
             self.fundo_largura = 700  # Mantém a largura padrão do espaço do background.
@@ -179,6 +177,7 @@ class MenuFases(arcade.View):
         self.fundo_largura = largura  # Guarda a largura final calculada.
         self.fundo_altura = altura  # Guarda a altura final calculada.
 
+
     # Responsável por desenhar todos os elementos visuais do menu.
     def on_draw(self):
         self.clear()  # Limpa o conteúdo desenhado anteriormente antes de redesenhar a tela.
@@ -193,6 +192,7 @@ class MenuFases(arcade.View):
         # Só exibe o nome da fase quando existem fases disponíveis.
         if self.fases:
             fundo_y = altura_real * 0.50
+
             self.nome_fase.x = largura_real / 2  # Centraliza horizontalmente o nome da fase.
             self.nome_fase.y = altura_real * 0.80  # Posiciona o nome abaixo do título.
             self.nome_fase.draw()  # Desenha o nome da fase selecionada.
@@ -271,8 +271,10 @@ class MenuFases(arcade.View):
             self.textos_fases[i].y = y  # Posiciona o número da fase verticalmente no centro do botão.
             self.textos_fases[i].draw()  # Desenha o número da fase na tela.
 
+
     # Processa as teclas pressionadas pelo jogador.
     def on_key_press(self, key, modifiers):
+
         # Ignora os comandos caso não existam fases disponíveis.
         if not self.fases:
             return
@@ -281,11 +283,6 @@ class MenuFases(arcade.View):
 
         # ESC retorna para a tela anterior.
         if key == arcade.key.ESCAPE:
-            # Para a música de prévia antes de sair do menu.
-            if self.preview is not None:
-                self.preview.stop()  # Interrompe a música atualmente tocando.
-                self.preview = None  # Remove a referência ao gerenciador da música.
-
             self.window.show_view(self.view_anterior)  # Mostra novamente a tela que abriu o menu de fases.
             return
 
@@ -299,11 +296,6 @@ class MenuFases(arcade.View):
 
         # ENTER inicia a fase atualmente selecionada.
         elif key == arcade.key.ENTER:
-            # Para a música de prévia antes de entrar no gameplay.
-            if self.preview is not None:
-                self.preview.stop()  # Interrompe a música de preview.
-                self.preview = None  # Remove a referência ao gerenciador anterior.
-
             self.window.show_view(
                 TelaGameplay(self, self.fases[self.indice])
             )  # Cria e abre a tela de gameplay usando a fase selecionada.
@@ -311,4 +303,4 @@ class MenuFases(arcade.View):
 
         # Só atualiza a fase caso o jogador realmente tenha mudado a seleção.
         if self.indice != indice_anterior:
-            self.atualizar_fase_selecionada()  # Atualiza nome, background e música da nova fase.
+            self.atualizar_fase_selecionada()  # Atualiza nome e background da nova fase.

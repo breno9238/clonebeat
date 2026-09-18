@@ -4,7 +4,7 @@ const int PIEZO_VERDE    = A2;
 const int PIEZO_AZUL     = A3; 
 
 // Subido de 20 para para eliminar os disparos fantasmas por ruído
-const int LIMITE_BATIDA = 90; 
+const int LIMITE_BATIDA = 50; 
 
 const unsigned long TEMPO_TRAVA = 100; // Debounce ligeiramente maior para o sinal estabilizar
 

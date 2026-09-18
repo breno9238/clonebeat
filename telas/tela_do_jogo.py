@@ -51,7 +51,7 @@ class TelaGameplay(arcade.View):
         if not USAR_TECLADO:
             # Estrutura de tratamento para evitar travamento do jogo se o dispositivo falhar
             try:
-                self.arduino = serial.Serial('COM6', 115200, timeout=0)  # Abre a porta COM3 na frequência configurada
+                self.arduino = serial.Serial('COM3', 115200, timeout=0)  # Abre a porta COM3 na frequência configurada
                 print("CONEXÃO: Arduino Uno conectado com sucesso")  # Exibe aviso de sucesso no console
             # Bloco capturador executado se o hardware não estiver conectado na porta
             except Exception as e:
