@@ -19,7 +19,7 @@ TITULO_JOGO = 'DRUM BEAT'
 
 # Volume geral do áudio.
 # É alterado pela TelaConfiguracoes.
-VOLUME = 0.5
+volume = 0.5
 
 
 # Skin atualmente selecionada.
@@ -40,12 +40,12 @@ CAMINHO_PASTA_FASES = Path(r'fases')
 
 # Velocidade de queda das notas.
 # É alterada pela TelaConfiguracoes.
-VELOCIDADE_QUEDA = 1100
+velocidade_queda = 1100
+
+
+margem_de_acerto = 400
 
 Y_RECEPTOR = 100
-
-MARGEM_ACERTO = 400
-
 
 # ==========================================
 # COLUNAS
@@ -57,6 +57,8 @@ COLUNAS_X = [795, 905, 1015, 1125]
 # ==========================================
 # INPUTS
 # ==========================================
+
+MODO_INVISIVEL = False  # Controla se as notas ficarão invisíveis na gameplay.
 
 USAR_TECLADO = False
 
